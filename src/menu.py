@@ -2,19 +2,20 @@
 # sys.path.insert(0, '/home/maksymklym/Team_project/cli-bot')
 
 from cli_bot import address_book_app
-
+from logo import LOGO, NEW_LOGO
 def exit_bot():
     print('Чекаю твого найшвидшого повернення!')
 
 def print_menu():
     print(
-        '''
-        Menu
-        1. Address book
-        2. Notebook
-        3. File sorter
-        4. Ask gpt
-        5. Exit
+        f'''
+        {NEW_LOGO}
+                        Menu
+                        1. Address book
+                        2. Notebook
+                        3. File sorter
+                        4. Ask gpt
+                        5. Exit
         '''
     )
 

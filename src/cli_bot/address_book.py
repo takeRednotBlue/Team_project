@@ -33,10 +33,10 @@ def address_book_app():
     # address_book = ab
     is_working = True
 
-    print('Hello, I\'m your personal bot-assistant.')
+    print('Привіт, це адресна книга. Тут ти можеш зберігати свої контакти.')
 
     while is_working:
-        user_input = input('>>> ')
+        user_input = input('>>> (addrbook) ')
         command, arguments = commands_parser(user_input)
         if command in COMMANDS:
             command_handler = COMMANDS[command]
