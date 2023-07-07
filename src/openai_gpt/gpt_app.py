@@ -1,6 +1,6 @@
-from handlers import *
+from .handlers import *
 # from utilities.commands_parser import commands_parser
-from commands_parser import commands_parser
+from utilities import commands_parser
 
 COMMANDS = {
     'story': set_story

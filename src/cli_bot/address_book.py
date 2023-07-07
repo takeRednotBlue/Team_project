@@ -2,6 +2,9 @@ from pathlib import Path
 from .commands_parser import commands_parser
 from .handlers import *
 
+from prompt_toolkit import prompt
+from prompt_toolkit.completion import WordCompleter
+
 
 COMMANDS = {
     'hello': greet,
@@ -19,6 +22,10 @@ COMMANDS = {
 
 END_COMMANS = ['exit', 'good bye', 'close']
 
+command_completer = WordCompleter(
+    list(COMMANDS.keys()) + END_COMMANS,
+    ignore_case=True,
+)
 
 def address_book_app():
 
@@ -36,7 +43,10 @@ def address_book_app():
     print('Привіт, це адресна книга. Тут ти можеш зберігати свої контакти.')
 
     while is_working:
-        user_input = input('>>> (addrbook) ')
+        user_input = prompt(
+            '>>> (addrbook) ', completer=command_completer, complete_while_typing=False
+        )
+        # user_input = input('>>> (addrbook) ')
         command, arguments = commands_parser(user_input)
         if command in COMMANDS:
             command_handler = COMMANDS[command]

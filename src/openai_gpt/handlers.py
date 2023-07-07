@@ -1,6 +1,6 @@
 import time
 import threading
-from gpt_response import gpt_response
+from .gpt_response import gpt_response
 
 response_received = False
 

@@ -1,6 +1,4 @@
-# import sys
-# sys.path.insert(0, '/home/maksymklym/Team_project/cli-bot')
-
+from openai_gpt import gpt_app
 from cli_bot import address_book_app
 from logo import LOGO, NEW_LOGO
 def exit_bot():
@@ -23,7 +21,7 @@ MENU_MAPING = {
     ('1', "Address book"): address_book_app,
     ('2', "Notebook"): None,
     ('3', "File sorter"): None,
-    ('4', "Ask gpt"): None,
+    ('4', "Ask gpt"): gpt_app,
     ('5', "Exit"): None,
 }
 
@@ -37,10 +35,10 @@ def main():
         print('Виберіть програму з якою хочете працювати.')
         user_input = input('>>> ')
         for menu_line, app in MENU_MAPING.items():
-            if user_input.startswith(menu_line):
+            if user_input.strip().startswith(menu_line):
                 app()
                 break
-            elif user_input.startswith('exit'):
+            elif user_input.strip().startswith('exit'):
                 exit_bot()
                 is_working = False
                 break
