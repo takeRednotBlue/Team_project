@@ -11,31 +11,65 @@ def parser(string: str) -> tuple:
 
     return (command, value)
 
-def add_note_to_book(book, note):
-    if note:
-        book.add_note(note)
-        print(f'Нотатка "{note}" збережена')
-    else:
-        print('Не можна зберегти порожню нотатку')
+def add_note_to_book(book, value):
+    value = value.split(' ')
+    name = value[0]
+    note = ' '.join(value[1:])
 
-def show(book, *_):
+    # Перевірка назв нотаток (не можна створити дві нотатки з однією назваю)
+    cheack_similar = True
+    for n in book.data:
+        if n.name == name:
+            cheack_similar = False
+
+    if note and cheack_similar:
+        book.add_note(name, note)
+        print(f'Нотатка "{note}" збережена')
+
+    else:
+        if not cheack_similar:
+            print('Назва нотатки вже зайнята\nadd <назва нотатки> <текст нотатки>')
+        else:
+            print('Не можна зберегти порожню нотатку\nadd <назва нотатки> <текст нотатки>')
+
+
+def sort_by_len(note):
+    return len(note.text)
+
+def sort_by_date(note):
+    return note
+
+def sort_by_alp(note):
+    return note.name
+
+def show(book, mode=None):
     list_of_notes = book.show_all()
+    
+    if mode == 'size':
+        list_of_notes.sort(key= sort_by_len)
+
+    if mode == 'alp':
+        list_of_notes.sort(key= sort_by_alp)
+
+    if mode == 'date':
+        list_of_notes.sort(key= sort_by_date)
+    
     if list_of_notes:
         for note in list_of_notes:
             if note.tags:
-                print(f'теги: {note.tags} нотатка: "{note}"')
+                print(f'_{note.name}_ теги: {note.tags} нотатка: "{note.text[:20]}"')
             else:
-                print(f'нотатка: "{note}"')
+                print(f'_{note.name}_ нотатка: "{note.text[:30]}"')
     else:
         print('Книга нотатків порожня')
 
 def delete(book, _, note):
     book.delete(note)
-    print(f'"{note}" - успішно видалено')
+    print(f'"{note.name}" - успішно видалено')
 
 def change(book, new_value, note):
     book.change(new_value, note)
-    print(f'нотатка "{note}" змінена на "{new_value}"')
+    print(f'нотатка "{note.text}" змінена на "{new_value}"')
 
 def cont(*_):
     pass
@@ -48,8 +82,9 @@ def help(*_):
 
 def tags(book, new_tags, note):
     if new_tags:
+        new_tags = new_tags.split(' ')
         book.change_tag(new_tags, note)
-        print(f'Теги "{new_tags}" були додані до "{note}"')
+        print(f'Теги {new_tags} були додані до "{note.name}"')
     else:
         print('Не можна додавати порожні теги')
 
@@ -59,9 +94,9 @@ def search(book, value):
 
     for note in result:
         if note.tags:
-            print(f'..{value}.. теги: {note.tags} нотатка: "{note}"')
+            print(f'_{note.name}_ теги: {note.tags} нотатка: "{note.text}"')
         else:
-            print(f'..{value}.. нотатка: "{note}"')
+            print(f'_{note.name}_ нотатка: "{note.text}"')
 
     if not result:
         print('Нічого не знайдено')
@@ -70,18 +105,30 @@ def search(book, value):
 
         input_2 = ''
         while not input_2.startswith(('delete', 'change', 'tags', 'cont', 'close')) :
-            input_2 = input('''Видалити - delete
-Змінити - change <новий текст>
-Змінити теги - tags <нові теги>
-Пропустити - cont
-Завершити роботу - close
-: ''')      
+            input_2 = input(HELP_FOR_NOTE)   
+
+            if not input_2.startswith(('delete', 'change', 'tags', 'cont', 'close')):
+                print('Невірна команда, оберіть команду з списку:')
+
+        if input_2 == 'close':
+            return 'close', '_', '_'
+        
         command, value = parser(input_2)
-        print(command, value)
         return command, value, note 
         
     else:
-        print('Щоб працювати з нотаткою, терба вибрати одну\n<search> <тег/текст нотатки>')
+        choose_note_name = input('Щоб працювати з нотаткою, терба вибрати одну\nНапишіть назву нотатки\n: ')
+
+        while choose_note_name not in [note.name for note in result]:
+            for note in result:
+                if note.tags:
+                    print(f'_{note.name}_ теги: {note.tags} нотатка: "{note.text}"')
+                else:
+                    print(f'_{note.name}_ нотатка: "{note.text}"')
+            choose_note_name = input('Щоб працювати з нотаткою, терба вибрати одну\nНапишіть назву нотатки\n: ')
+
+        search(book, choose_note_name) #рекурсивно викликаємо функцію коли обрали одну нотатку
+
     
 
 
@@ -99,8 +146,15 @@ COMMAND_DICT = {
 
 HELP = """
 Команди:
-add <текс нотатки> - створити нову нотатку
-show - вивести всі нотатки
+add <назва нотатки> <текс нотатки> - створити нову нотатку
+show <date|alp|size> - вивести всі нотатки, сортувати за датою|алфавітом|розміром (не обов'язково)
 search <тег/текст нотатки> - пошук нотатки
 close - завершити роботу
 """
+
+HELP_FOR_NOTE = '''Видалити - delete
+Змінити - change <новий текст>
+Змінити теги - tags <нові теги>
+Пропустити - cont
+Завершити роботу - close
+: '''

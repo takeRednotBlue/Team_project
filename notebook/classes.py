@@ -1,17 +1,35 @@
-
+from datetime import datetime
 
 class Note():
 
-    def __init__(self, text, *tags):
+    def __init__(self, name, text, tags=None):
+        self.createde_time = datetime.now()
+        self.name = name
         self.text = text
         self.tags = []
-        self.tags.extend(tags)
+        if tags:
+            self.tags.extend(tags)
 
-    def __repr__(self) -> str:
-        return self.text
+    # def __repr__(self) -> str:
+    #     return f'.{self.name}.'
     
     def add_tags(self, tags):
         self.tags.extend(tags)
+
+    def __eq__(self, obj: object) -> bool:
+        return self.createde_time == obj.createde_time
+    
+    def __ge__(self, obj):
+        return self.createde_time >= obj.createde_time
+    
+    def __le__(self, obj):
+        return self.createde_time <= obj.createde_time
+    
+    def __lt__(self, obj):
+        return self.createde_time < obj.createde_time
+    
+    def __gt__(self, obj):
+        return self.createde_time > obj.createde_time
 
 
 class NoteBook():
@@ -19,8 +37,8 @@ class NoteBook():
     def __init__(self):
         self.data = []
 
-    def add_note(self, value):
-        note = Note(value)
+    def add_note(self, name, value):
+        note = Note(name, value)
 
         answer = input('Бажаєте додати теги до цієї нотатки? Y/N: ')
         while answer not in ['y', 'Y', 'n', 'N']:
@@ -32,6 +50,7 @@ class NoteBook():
             tags = input('Введіть теги: ')
             if tags:
                 tags = tags.split(' ')
+                tags = [t for t in tags if t] # Видаляємо пусті теги
                 note.add_tags(tags)
             else:
                 print('Не можна зберегти порожні теги')
@@ -51,7 +70,7 @@ class NoteBook():
         result = []
         for note in self.data:
             
-            if value in note.text or value in note.tags:
+            if value in note.tags or value in note.name:
 
                 result.append(note)
 
@@ -64,14 +83,14 @@ class NoteBook():
 
     def change(self, new_value, note):
         self.delete(note) 
-        self.add_note(new_value)
+        self.add_note(note.name, new_value)
 
     def change_tag(self, new_tags, note):
         for n in self.data:
-            if n == note:
+            if n.name == note.name:
                 index_note = self.data.index(n)
                 old_note = self.data[index_note]
-                new_note = Note(old_note.text, new_tags)
+                new_note = Note(old_note.name, old_note.text, new_tags)
                 
                 self.delete(old_note)
                 self.add(new_note)
