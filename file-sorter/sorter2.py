@@ -180,18 +180,23 @@ def move_and_normalize_and_unarchieve_files_into_correct_folders(
 
 
 def remove_all_unnecessary_folders(rootdir, dict_extentions):
+    count_remove_all_unnecessary_folders = 0
     for it in os.scandir(rootdir):
         if (
             it.is_dir()
             and it.name not in dict_extentions.keys()
             and it.name != "uknown_extension"
         ):
+            count_remove_all_unnecessary_folders += 1
+            print('count_remove_all_unnecessary_folders')
             shutil.rmtree(it, ignore_errors=True)
+
+
 
 
 def print_out_in_console(dict_fact_files, dict_known_unknown_extentions):
     for key, value in dict_fact_files.items():
-        print(f"files in cat '{key}': {', '.join(value)}")
+        print( f"назва папки '{key}': {', '.join(value)}")
         if key == "uknown_extension":
             dict_known_unknown_extentions["unknown extensions"].update(
                 i[(i).rfind(".") :].lower() for i in value
@@ -199,6 +204,7 @@ def print_out_in_console(dict_fact_files, dict_known_unknown_extentions):
         else:
             dict_known_unknown_extentions["known extensions"].update(
                 i[(i).rfind(".") :].lower() for i in value
+
             )
     for key, value in dict_known_unknown_extentions.items():
         print(f"{key}: {', '.join(value)}")
@@ -215,14 +221,11 @@ def validate_correct_path():
             print(
                 Fore.RED
                 # + Back.RED
-                + f"    >Шлях не існує. Вкажіть шлях та каталог!"
+                + f"    Шлях не існує. Вкажіть шлях та каталог!"
             )
-            
-           
-
-            print(  "Якщо ви хочете вийти - введіть 'exit'")
+                       
+            print(Fore.WHITE +  "Якщо ви хочете вийти - введіть 'exit")
         else:
-            print(Fore.YELLOW +  "Якщо ви хочете вийти - введіть 'exit'")
             break
     return rootdir
 
@@ -232,8 +235,8 @@ def main():
         "archives": ["ZIP", "GZ", "TAR", 'RAR', '7Z', 'TGZ', 'ISO', 'JAR', 'BZ2'],
         "video": ["AVI", "MP4", "MOV", "MKV", 'FLV', 'MPEG', '3GP', 'WEBM', 'VOB', 'DIVX'],
         "audio": ["MP3", "OGG", "WAV", "AMR"],
-        "documents": ["DOC", "DOCX", "TXT", "PDF", "XLSX", "PPTX",'DOT',],
-        "images": ["JPEG", "PNG", "JPG", "SVG"],
+        "documents": ["DOC", "DOCX", "TXT", "PDF", "XLSX", "XLS", "PPTX","DOT","CAD", "DWG", "ODG", "ODT"],
+        "images": ["JPEG", "PNG", "JPG", "SVG"]
     }
 
     dict_fact_files = {
@@ -254,7 +257,8 @@ def main():
     while True:
         rootdir = validate_correct_path()
         if rootdir.lower() == "exit":
-            print("Exit from Sort")
+            print(Fore.BLUE +   "Вихід з сортувальника")
+            print (Fore.YELLOW +   "Слава Україні!")
             break
         lst_all_files = []
         lst_all_files = list_all_files_in_rootdir(rootdir, lst_all_files)
