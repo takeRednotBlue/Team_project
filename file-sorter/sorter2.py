@@ -208,26 +208,31 @@ def validate_correct_path():
     rootdir = None
     while True:
         rootdir = input(
-            ">Введіть правильний шлях до каталогу, який потрібно відсортувати:"
+            ">   Введіть шлях до каталогу, який потрібно відсортувати:"  
+            
         ).strip()
         if not os.path.exists(rootdir) and rootdir.lower() != "exit":
             print(
-                Fore.WHITE
-                + Back.RED
-                + f"    >Шлях не існує. Вкажіть правильний шлях та каталог"
+                Fore.RED
+                # + Back.RED
+                + f"    >Шлях не існує. Вкажіть шлях та каталог!"
             )
-            print("Якщо ви хочете вийти - введіть 'exit'")
+            
+           
+
+            print(  "Якщо ви хочете вийти - введіть 'exit'")
         else:
+            print(Fore.YELLOW +  "Якщо ви хочете вийти - введіть 'exit'")
             break
     return rootdir
 
 
 def main():
     dict_extentions = {
-        "archives": ["ZIP", "GZ", "TAR"],
-        "video": ["AVI", "MP4", "MOV", "MKV"],
+        "archives": ["ZIP", "GZ", "TAR", 'RAR', '7Z', 'TGZ', 'ISO', 'JAR', 'BZ2'],
+        "video": ["AVI", "MP4", "MOV", "MKV", 'FLV', 'MPEG', '3GP', 'WEBM', 'VOB', 'DIVX'],
         "audio": ["MP3", "OGG", "WAV", "AMR"],
-        "documents": ["DOC", "DOCX", "TXT", "PDF", "XLSX", "PPTX"],
+        "documents": ["DOC", "DOCX", "TXT", "PDF", "XLSX", "PPTX",'DOT',],
         "images": ["JPEG", "PNG", "JPG", "SVG"],
     }
 
@@ -239,6 +244,7 @@ def main():
         "images": [],
         "uknown_extension": [],
     }
+    
 
     dict_known_unknown_extentions = {
         "known extensions": set(),
