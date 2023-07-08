@@ -1,4 +1,3 @@
-
 def commands_parser(input: str) -> tuple:
     words_list = input.split()
     if not words_list:
