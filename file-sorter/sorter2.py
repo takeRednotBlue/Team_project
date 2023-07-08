@@ -190,7 +190,7 @@ def remove_all_unnecessary_folders(rootdir, dict_extentions):
             count_remove_all_unnecessary_folders += 1
             print('count_remove_all_unnecessary_folders')
             shutil.rmtree(it, ignore_errors=True)
-
+        return  count_remove_all_unnecessary_folders
 
 
 
@@ -230,21 +230,21 @@ def validate_correct_path():
     return rootdir
 
 
-def main():
+def main(): 
     dict_extentions = {
-        "archives": ["ZIP", "GZ", "TAR", 'RAR', '7Z', 'TGZ', 'ISO', 'JAR', 'BZ2'],
-        "video": ["AVI", "MP4", "MOV", "MKV", 'FLV', 'MPEG', '3GP', 'WEBM', 'VOB', 'DIVX'],
-        "audio": ["MP3", "OGG", "WAV", "AMR"],
-        "documents": ["DOC", "DOCX", "TXT", "PDF", "XLSX", "XLS", "PPTX","DOT","CAD", "DWG", "ODG", "ODT"],
-        "images": ["JPEG", "PNG", "JPG", "SVG"]
+        "Archives": ["ZIP", "GZ", "TAR", 'RAR', '7Z', 'TGZ', 'ISO', 'JAR', 'BZ2'],
+        "Video": ["AVI", "MP4", "MOV", "MKV", 'FLV', 'MPEG', '3GP', 'WEBM', 'VOB', 'DIVX'],
+        "Audio": ["MP3", "OGG", "WAV", "AMR"],
+        "Documents": ["DOC", "DOCX", "TXT", "PDF", "XLSX", "XLS", "PPTX","DOT","CAD", "DWG", "ODG", "ODT"],
+        "Images": ["JPEG", "PNG", "JPG", "SVG"]
     }
 
     dict_fact_files = {
-        "archives": [],
-        "video": [],
-        "audio": [],
-        "documents": [],
-        "images": [],
+        "Archives": [],
+        "Video": [],
+        "Audio": [],
+        "Documents": [],
+        "Images": [],
         "uknown_extension": [],
     }
     
@@ -269,6 +269,7 @@ def main():
         normalize_all_files_and_folders_in_archieve(os.path.join(rootdir, "archives"))
         remove_all_unnecessary_folders(rootdir, dict_extentions)
         print_out_in_console(dict_fact_files, dict_known_unknown_extentions)
+        print('count_remove_all_unnecessary_folders')
 
 
 if __name__ == "__main__":
