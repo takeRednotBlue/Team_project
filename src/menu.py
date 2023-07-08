@@ -1,5 +1,5 @@
-from openai_gpt import gpt_app
-from cli_bot import address_book_app
+# from openai_gpt import gpt_app
+# from cli_bot import address_book_app
 from utilities import completer_input, kb_interrupt_error
 from logo import LOGO
 
@@ -21,10 +21,10 @@ def print_menu():
     )
 
 MENU_MAPING = {
-    ('1', "Address book"): address_book_app,
+    ('1', "Address book"): None,
     ('2', "Notebook"): None,
     ('3', "File sorter"): None,
-    ('4', "Ask gpt"): gpt_app,
+    ('4', "Ask gpt"): None,
     ('0', "Exit"): None,
 }
 
