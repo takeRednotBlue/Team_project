@@ -42,7 +42,6 @@ def main(path):
             note_book = pickle.load(file)
 
     while True:
-
         string = input('Enter: ')
         command, value = hd.parser(string)
 
@@ -53,6 +52,10 @@ def main(path):
         result = hd.COMMAND_DICT[command](note_book, value)
         with open(path, 'wb') as file:
             pickle.dump(note_book, file)
+
+        if command == 'close':
+            close(path, note_book)
+            break
 
         # Для роботи з вибраною нотаткою 
         if result: 

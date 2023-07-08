@@ -62,7 +62,6 @@ class NoteBook():
 
 
     def show_all(self):
-        
         return self.data
     
     def search(self, value):
@@ -71,8 +70,11 @@ class NoteBook():
         for note in self.data:
             
             if value in note.tags or value in note.name:
-
                 result.append(note)
+
+        for note in result:
+            if note.name == value:
+                result = [note]
 
         return result if value else []
     
