@@ -1,9 +1,7 @@
 from pathlib import Path
+from utilities import completer_input
 from .commands_parser import commands_parser
 from .handlers import *
-
-from prompt_toolkit import prompt
-from prompt_toolkit.completion import WordCompleter
 
 
 COMMANDS = {
@@ -20,12 +18,13 @@ COMMANDS = {
     'ask': ask_ai
 }
 
-END_COMMANS = ['exit', 'good bye', 'close']
+END_COMMANDS = [
+    'exit',
+    'good bye',
+    'close'
+]
 
-command_completer = WordCompleter(
-    list(COMMANDS.keys()) + END_COMMANS,
-    ignore_case=True,
-)
+commands_list = list(COMMANDS.keys()) + END_COMMANDS
 
 def address_book_app():
 
@@ -43,15 +42,13 @@ def address_book_app():
     print('Привіт, це адресна книга. Тут ти можеш зберігати свої контакти.')
 
     while is_working:
-        user_input = prompt(
-            '>>> (addrbook) ', completer=command_completer, complete_while_typing=False
-        )
+        user_input = completer_input('>>> (addrbook) ', commands=commands_list)
         # user_input = input('>>> (addrbook) ')
         command, arguments = commands_parser(user_input)
         if command in COMMANDS:
             command_handler = COMMANDS[command]
             command_handler(arguments, address_book)
-        elif command in END_COMMANS:
+        elif command in END_COMMANDS:
             exit_bot()
             address_book.save_to_file()
             is_working = False
