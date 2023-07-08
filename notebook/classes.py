@@ -10,8 +10,7 @@ class Note():
         if tags:
             self.tags.extend(tags)
 
-    # def __repr__(self) -> str:
-    #     return f'.{self.name}.'
+
     
     def add_tags(self, tags):
         self.tags.extend(tags)

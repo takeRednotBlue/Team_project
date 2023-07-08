@@ -80,8 +80,12 @@ def change(book, new_value, note):
         print('Нотатка не може бути більше 120 символів')
         return
     
-    book.change(new_value, note)
-    print(f'нотатка "{note.text}" змінена на "{new_value}"')
+    if new_value:
+        book.change(new_value, note)
+        print(f'нотатка "{note.text}" змінена на "{new_value}"')
+
+    else:
+        print('Нотатка не може бути порожньою')
 
 def cont(*_):
     pass
