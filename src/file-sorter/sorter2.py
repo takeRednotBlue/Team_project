@@ -205,8 +205,15 @@ def print_out_in_console(dict_fact_files, dict_known_unknown_extentions):
                 i[(i).rfind(".") :].lower() for i in value
 
             )
+    key_translit = {
+    "known extensions": 'Відомі розширення',
+    "unknown extensions": 'Невідомі розширення',
+}
+    
+
     for key, value in dict_known_unknown_extentions.items():
-        print(f"{key}: {', '.join(value)}")
+        print(f"{key_translit[key]}: {', '.join(value)}")
+    
 
 def validate_correct_path():
     rootdir = None
