@@ -11,9 +11,17 @@ class Note():
             self.tags.extend(tags)
 
 
-    
     def add_tags(self, tags):
         self.tags.extend(tags)
+
+    def change_tags(self, new_tags):
+        self.tags = [*new_tags]
+
+    def change_note(self, new_value):
+        self.text = new_value
+
+    def clean_tag(self):
+        self.tags = []
 
     def __eq__(self, obj: object) -> bool:
         return self.createde_time == obj.createde_time
@@ -37,28 +45,12 @@ class NoteBook():
         self.data = []
 
     def add_note(self, name, value):
-        note = Note(name, value)
-
-        answer = input('Бажаєте додати теги до цієї нотатки? Y/N: ')
-        while answer not in ['y', 'Y', 'n', 'N']:
-            answer = input('Введіть так або ні (Y/N): ')
-
-
-        if answer in ['y', 'Y']:
-
-            tags = input('Введіть теги: ')
-            if tags:
-                tags = tags.split(' ')
-                tags = [t for t in tags if t] # Видаляємо пусті теги
-                note.add_tags(tags)
-            else:
-                print('Не можна зберегти порожні теги')
-
-        self.data.append(note)
+        new_note = Note(name, value)
+        self.data.append(new_note)
+        return new_note
 
     def add(self, note: Note):
         self.data.append(note)
-
 
     def show_all(self):
         return self.data

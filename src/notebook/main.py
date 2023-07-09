@@ -1,7 +1,8 @@
 from pathlib import Path
 import pickle
 from classes import NoteBook
-import handler as hd
+import handler as hd 
+# from ..utilities import completer_input
 
 
 def input_error_handler(func):
@@ -28,10 +29,11 @@ def close(path, note_book):
 
 
 @input_error_handler
-def main(path):
+def main():
     
-    print('<help> - список команд')
-    with open(path) as file:
+    path = Path(__file__).parent / 'note_book.txt'
+    print(hd.HELP_TABLE)
+    with open(path, 'rb') as file:
         if not file.read(): #empty file (first start)
             
             with open(path, 'wb') as file:
@@ -42,7 +44,8 @@ def main(path):
             note_book = pickle.load(file)
 
     while True:
-        string = input('Enter: ')
+        # string = completer_input('>>>', ['add', 'delete'])
+        string = input('>>> ')
         command, value = hd.parser(string)
 
         if command == 'close':
@@ -58,7 +61,7 @@ def main(path):
             break
 
         # Для роботи з вибраною нотаткою 
-        if result: 
+        if result:
             new_command, new_value, note = result
 
             if new_command == 'close':
@@ -70,5 +73,5 @@ def main(path):
                 pickle.dump(note_book, file)
 
 if __name__ == '__main__':
-    path_to_notebook = Path(__file__).parent / 'note_book.txt'
-    main(path_to_notebook)
+    
+    main()
