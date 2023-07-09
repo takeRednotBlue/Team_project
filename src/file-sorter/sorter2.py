@@ -19,7 +19,7 @@ def list_all_files_in_rootdir(rootdir, lst_all_files):
 def create_new_folders_in_rootdir(rootdir, dir_category_dict):
     for key in dir_category_dict.keys():
         os.makedirs(os.path.join(rootdir, key), exist_ok=True)
-    os.makedirs(os.path.join(rootdir, "unknown_extension"), exist_ok=True)
+    os.makedirs(os.path.join(rootdir, "uknown_extension"), exist_ok=True)
 
 
 def normalize(name):
@@ -165,20 +165,22 @@ def move_and_normalize_and_unarchieve_files_into_correct_folders(
                 file.name[(file.name).rfind(".") + 1 :].upper() in value
                 and key == "Archives"
             ):
-                # shutil.unpack_archive(
-                #     file,
-                #     os.path.join(
-                #         rootdir, key, normalize(file.name[: (file.name).rfind(".")])
-                #     ),
-                # )
+                dest_path = os.path.join(rootdir, key, normalize(file.name))
+                shutil.move(file, dest_path)
+                if file.name[(file.name).rfind(".") :].lower() in {
+                    ".zip", ".tar", ".gztar", ".bztar", ".xztar"
+                }:
+                    unpack_dest = os.path.join(os.path.join(rootdir, key), file.name[:(file.name).rfind(".")])
+                    shutil.unpack_archive(dest_path, unpack_dest)
+                    os.unlink(dest_path)
                 is_moved = True
                 dict_fact_files[key].append(normalize(file.name))
                 count_moved_files += 1
         if is_moved == False:
             shutil.move(
-                file, os.path.join(rootdir, "unknown_extension", normalize(file.name))
+                file, os.path.join(rootdir, "uknown_extension", normalize(file.name))
             )
-            dict_fact_files["unknown_extension"].append(normalize(file.name))
+            dict_fact_files["uknown_extension"].append(normalize(file.name))
 
 def remove_all_unnecessary_folders(rootdir, dict_extentions):
     count_remove_all_unnecessary_folders = 0
@@ -186,17 +188,16 @@ def remove_all_unnecessary_folders(rootdir, dict_extentions):
         if (
             it.is_dir()
             and it.name not in dict_extentions.keys()
-            and it.name != "n_extension"
+            and it.name != "uknown_extension"
         ):
-            count_remove_all_unnecessary_folders += 1
-            print('count_remove_all_unnecessary_folders')
             shutil.rmtree(it, ignore_errors=True)
-        return  count_remove_all_unnecessary_folders
+            count_remove_all_unnecessary_folders += 1
+    return  count_remove_all_unnecessary_folders
 
 def print_out_in_console(dict_fact_files, dict_known_unknown_extentions):
     for key, value in dict_fact_files.items():
         print(Fore.LIGHTMAGENTA_EX + f"     Каталог'{key}': {len(value)}")
-        if key == "n_extension":
+        if key == "uknown_extension":
             dict_known_unknown_extentions["unknown extensions"].update(
                 i[(i).rfind(".") :].lower() for i in value
             )
@@ -225,8 +226,7 @@ def validate_correct_path():
         if not os.path.exists(rootdir) and rootdir.lower() != "exit":
             print(
                 Fore.RED
-                # + Back.RED
-                + f"    Шлях не існує. Вкажіть шлях каталогу для сортування!"
+               + f"    Шлях не існує. Вкажіть шлях каталогу для сортування!"
             )
                        
             print(Fore.WHITE +  "Для завершення роботи - введіть 'exit'")
@@ -240,7 +240,7 @@ def main():
         "Archives": ["ZIP", "GZ", "TAR", 'RAR', '7Z', 'TGZ', 'ISO', 'JAR', 'BZ2'],
         "Video": ["AVI", "MP4", "MOV", "MKV", 'FLV', 'MPEG', '3GP', 'WEBM', 'VOB', 'DIVX'],
         "Audio": ["MP3", "OGG", "WAV", "AMR"],
-        "Documents": ["DOC", "DOCX", "TXT", "PDF", "XLSX", "XLS", "PPTX","DOT","CAD", "DWG", "ODG", "ODT", "HTML", "URL"],
+        "Documents": ["DOC", "DOCX", "TXT", "PDF", "XLSX", "XLS", "PPTX","CAD", "DWG", "ODG", "ODT", "HTML", "URL"],
         "Images": ["JPEG", "PNG", "JPG", "SVG"]
     }
 
@@ -250,7 +250,7 @@ def main():
         "Audio": [],
         "Documents": [],
         "Images": [],
-        "unknown_extension": [],
+        "uknown_extension": [],
     }
     
 
@@ -264,7 +264,7 @@ def main():
         if rootdir.lower() == "exit":
             print(Fore.BLUE +   "Вихід з сортувальника. Успіхів")
             print (Fore.YELLOW +   "Слава Україні! - Героям Слава!")
-            break
+            sys.exit()
         lst_all_files = []
         lst_all_files = list_all_files_in_rootdir(rootdir, lst_all_files)
         create_new_folders_in_rootdir(rootdir, dict_extentions)
@@ -272,9 +272,10 @@ def main():
             rootdir, dict_extentions, lst_all_files, dict_fact_files
         )
         normalize_all_files_and_folders_in_archieve(os.path.join(rootdir, "Archives"))
-        remove_all_unnecessary_folders(rootdir, dict_extentions)
+        removed_folders = remove_all_unnecessary_folders(rootdir, dict_extentions)
         print_out_in_console(dict_fact_files, dict_known_unknown_extentions)
-        print(Fore.WHITE + 'Видалені каталоги')
+        print(Fore.LIGHTCYAN_EX +         f'Видалені каталоги: {removed_folders}')
+        main()
 
 
 if __name__ == "__main__":
