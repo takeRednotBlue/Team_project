@@ -218,9 +218,12 @@ def print_out_in_console(dict_fact_files, dict_known_unknown_extentions):
 
 def validate_correct_path():
     rootdir = None
+    print(Fore.BLUE +  "    Вас вітає додаток 'Сортувальник'")
+    print(Fore.YELLOW +  "  Виберіть каталог для обробки ")
+    print(Fore.WHITE + "") 
     while True:
         rootdir = input(
-            ">   Вкажіть шлях до каталогу, який потрібно відсортувати:"  
+            "> Вкажіть шлях до каталогу, який потрібно відсортувати:"  
             
         ).strip()
         if not os.path.exists(rootdir) and rootdir.lower() != "exit":
