@@ -1,9 +1,16 @@
 from handlers import *
 from commands_parser import commands_parser
-from openai.error import AuthenticationError, ServiceUnavailableError
+from openai.error import AuthenticationError, ServiceUnavailableError, APIConnectionError
 import json
 import openai
 import os 
+
+
+def set_story(args: list) -> None:
+    story = ' '.join(args)
+    return story
+
+
 
 COMMANDS = {
     'story': set_story
@@ -22,10 +29,11 @@ def gpt_app():
             key = input('>>> будь ласка, введіть ключ AI:')
             if key:
                 choose = input('>>> ви хочете зберегти свій ключ API?, введіть так|ні:')
-                if choose == 'yes':
+                if choose == 'так':
                     with open(file_path, 'w') as fh:
                         json.dump(key, fh)
                     openai.api_key = key
+                    print('>>> Ваш ключ успiшно збережено')
                 else:
                     openai.api_key = key
             else:
@@ -59,10 +67,12 @@ def gpt_app():
     except ServiceUnavailableError:
         print('>>> На даний момент сервер переповнений. Будь ласка, повтори спробу пізніше або перевір з\'єднання з Інтернетом.')
         gpt_app()
-    except Exception as e:
-        print(e)
+    except APIConnectionError:
+        print('>>> будь ласка перевірте своє поєднання з інтернетом')
 
 if __name__ == "__main__":
+    print('Привіт, це короткий гайд використання бота помічника:\
+перше що тобі потрібно зробити це ввести коректний API ключ, який можна отримати на сайті: https://platform.openai.com/account/api-keys, якщо у вас немає коштів на балансі - бот працювати не буде. Якщо ключ введено або вказано неправильно - після перевірки бот запросить ввести його по-новому. Далі потрібно буде ввести питання, що цікавить тебе, і бот з радістю відповість на всі питання) Вихід з бота здійснюється командами exit, good byе, close')
     print('>>> Привіт, я ваш персональний бот-помічник.\n')
     gpt_app()
 
