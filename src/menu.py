@@ -2,6 +2,7 @@
 # from cli_bot import address_book_app
 from utilities import completer_input, kb_interrupt_error
 from logo import LOGO
+from addressbook import main
 
 
 def exit_bot():
