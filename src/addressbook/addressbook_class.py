@@ -86,7 +86,7 @@ class Home(Field):
         self.__value = value
 
     def __str__(self):
-        return f"Адреса: {self.address}"
+        return f"Адреса: {self.value}"
 
 
 class Record:
@@ -175,12 +175,6 @@ class Record:
         else:
             raise IndexError("Домашня адреса вже була додана")
 
-    def edit_home_address(self, address: str):
-        if not self.home:
-            raise IndexError("У цього контакту немає домашньої адреси")
-        else:
-            self.home.address = address
-
 
 class AddressBook(UserDict):
     def load_from_file(self, filename):
@@ -205,9 +199,4 @@ class AddressBook(UserDict):
         self.data.update({record.name.value: record})
 
     def show_all(self):
-        output = ""
-        for contact in self.data.values():
-            output += str(contact)
-        output += f"Загальна кількість в тел. книзі: {len(self.data)} контактів."
-        return output if output else "Книга контактів пуста"
-    
+        return self.data.values()

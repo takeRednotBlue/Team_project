@@ -6,8 +6,6 @@ from tabulate import tabulate
 
 from addressbook_class import *
 
-size = 10
-
 def input_error(func):
     @wraps(func)
     def wrapper(*args):
@@ -224,20 +222,19 @@ def phone(book: AddressBook, *args):
 @input_error
 def show_all(book: AddressBook, *args):
     """
-    Виведе на екран всі контакти.
+    Виведе на екран всі контакти у колонках.
     """
-    if len(book) < size:
-        contacts = book.show_all().strip()
-        if not contacts:
-            return "Книга контактів порожня"
-        return tabulate([contacts.split("\n")], tablefmt="grid")
-    else:
-        gen_obj = book.iterator(size)
-        table_data = []
-        for contact in gen_obj:
-            table_data.append([str(contact)])
-        table_headers = ["Контакт"]
-        return tabulate(table_data, headers=table_headers, tablefmt="grid")
+    table_data = []
+    for contact in book.data.values():
+        name = contact.name.value
+        phone = ", ".join([str(phone) for phone in contact.phones])
+        email = str(contact.email) if contact.email else "Не вказано"
+        birthday = str(contact.birthday) if contact.birthday else "Не вказано"
+        home = str(contact.home) if contact.home else "Не вказано"
+        table_data.append([name, phone, email, birthday, home])
+    print()
+    table_headers = ["Ім'я", "Телефон", "E-mail", "День народження", "Адреса"]
+    return tabulate(table_data, headers=table_headers, tablefmt="grid")
 
 @input_error
 def search(book: AddressBook, *args):
