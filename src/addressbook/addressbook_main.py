@@ -3,6 +3,9 @@ from functools import wraps
 from pathlib import Path
 
 from tabulate import tabulate
+from faker import Faker
+from email_validator import validate_email, EmailUndeliverableError
+from phonenumbers import is_valid_number, parse
 
 from addressbook_class import *
 
@@ -321,9 +324,12 @@ is_ended = False
 
 
 def main():
+    global book1
     book1 = AddressBook()
     if Path('saving.bin').exists():
         book1.load_from_file('saving.bin')
+
+    fake(book1)
 
     flag = True
     while not is_ended:
@@ -335,6 +341,40 @@ def main():
         start_text = input(">>> Введіть команду: ")
         command, args = command_parser(start_text)
         print(command(book1, *args))
+
+def fake(book):
+    fake = Faker('uk_UA')
+
+    for _ in range(10):
+        contact = fake.first_name()
+
+        while True:
+            try:
+                email = fake.ascii_free_email()
+                if validate_email(email):
+                    break
+            except EmailUndeliverableError:
+                pass
+
+        while True:
+            phone = re.sub(r'\D', '', fake.phone_number())
+            parsed_phone = parse(phone, 'UA')
+            if len(phone) > 9 and is_valid_number(parsed_phone):
+                break
+        
+        fake_date = fake.date()
+        birthday = datetime.strptime(fake_date, '%Y-%m-%d').strftime('%d.%m.%Y')
+
+        city = fake.city().split()
+        if len(city) > 1:
+            city = city[-1]
+
+
+        add(book, contact, phone)
+        email_add(book, contact, email)
+        birthday_add(book, contact, birthday)
+        home_add(book, contact, city)
+
 
 
 if __name__ == "__main__":

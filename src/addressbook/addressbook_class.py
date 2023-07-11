@@ -86,7 +86,7 @@ class Home(Field):
         self.__value = value
 
     def __str__(self):
-        return f"Адреса: {self.value}"
+        return self.value
 
 
 class Record:
