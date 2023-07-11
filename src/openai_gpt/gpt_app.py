@@ -1,5 +1,5 @@
 from handlers import *
-from commands_parser import commands_parser
+from utilities import commands_parser
 from openai.error import AuthenticationError, ServiceUnavailableError, APIConnectionError
 import json
 import openai
