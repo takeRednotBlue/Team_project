@@ -1,4 +1,3 @@
-import os
 import openai
 
 def gpt_response(prompt, story,):

@@ -27,13 +27,13 @@ def add_note_to_book(book, value):
     if note and cheack_similar:
         new_note = book.add_note(name, note)
         
-        answer = input('Бажаєте додати теги до цієї нотатки? Y/N >>> ')
+        answer = input('Бажаєте додати теги до цієї нотатки? (Y/n): ')
         while answer not in ['y', 'Y', 'n', 'N']:
-            answer = input('Введіть так або ні (Y/N) >>> ')
+            answer = input('Введіть так або ні (Y/n): ')
 
         if answer in ['y', 'Y']:
 
-            tags = input('Введіть теги через пробіл >>> ')
+            tags = input('Введіть теги через пробіл:  ')
             if tags:
                 tags = tags.split(' ')
                 tags = [t for t in tags if t] # Видаляємо пусті теги
@@ -117,7 +117,7 @@ def change(book, new_value, note):
     
     if new_value:
         note.change_note(new_value)
-        print(f'нотатка "{note.name}" змінена на "{new_value}"')
+        print(f'Нотатка "{note.name}" змінена на "{new_value}"')
         # search(book, note.name)
         
     
@@ -215,7 +215,7 @@ def search(book, value, search_result= True):
         input_2 = ''
         while not input_2.startswith(('change')) and input_2 not in ['delete', 'close', 'tags add', 'tags change', 'tags clean']:
             print('\t\t\t\tМеню нотатки')
-            input_2 = completer_input(f'{HELP_NOTE_TABLE}\n>>> ', COMMAND_INPUT_MENU).casefold().strip()
+            input_2 = completer_input(f'{HELP_NOTE_TABLE}\n>>> (note) ', COMMAND_INPUT_MENU).casefold().strip()
 
             if input_2.startswith(('show', 'search', 'add', 'help')):
                 print(f'Команда "{input_2}" не доступна в меню нотатки')

@@ -1,8 +1,13 @@
-from pathlib import Path
+from colorama import init, Fore
 import pickle
-from .classes import NoteBook
-from .handler import * 
+from pathlib import Path
+
 from utilities import completer_input
+
+from notebook.classes import NoteBook
+from notebook.handler import * 
+
+init()
 
 
 def input_error_handler(func):
@@ -32,17 +37,18 @@ first_start = True
 def note_book():
     
     try:
-
         global first_start
         if first_start:
-            print('НОТАТКИ 📖\nТут ви можете зберігати свої нотатки')
+            print()
+            print('{:<116}'.format(Fore.BLUE + f'{" "*5}Вас вітає додаток НОТАТКИ 📖'))
+            print('{:<116}'.format(Fore.YELLOW + f'{" "*5}Тут ви можете зберігати свої нотатки та керувати ними' + Fore.WHITE))
+            print()
             first_start = False
 
         path = Path(__file__).parent / 'note_book.txt'
         print(HELP_TABLE)
         with open(path, 'ab+') as file:
             if not file.read(): #empty file (first start)
-                
                 
                 note_book = NoteBook()
                 pickle.dump(note_book, file)
@@ -52,7 +58,6 @@ def note_book():
 
         while True:
             string = completer_input('>>> ', COMMAND_INPUT)
-            # string = input('>>> ')
             command, value = parser(string)
 
             if command == 'close':

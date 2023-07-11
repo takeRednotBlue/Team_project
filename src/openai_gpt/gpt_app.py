@@ -1,9 +1,10 @@
-from handlers import *
-from utilities import commands_parser
-from openai.error import AuthenticationError, ServiceUnavailableError, APIConnectionError
 import json
-import openai
 import os 
+import openai
+from openai.error import AuthenticationError, ServiceUnavailableError, APIConnectionError
+
+from openai_gpt.handlers import *
+from utilities import commands_parser
 
 
 def set_story(args: list) -> None:

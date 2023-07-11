@@ -1,8 +1,8 @@
-# from openai_gpt import gpt_app
-# from cli_bot import address_book_app
-from utilities import completer_input, kb_interrupt_error
 from logo import LOGO
-from notebook import note_book
+from file_sorter import sorter_app
+from openai_gpt import gpt_app
+from notebook import notebook_app
+from utilities import completer_input, kb_interrupt_error
 
 
 def exit_bot():
@@ -23,9 +23,9 @@ def print_menu():
 
 MENU_MAPING = {
     ('1', "Address book"): None,
-    ('2', "Notebook"): note_book,
-    ('3', "File sorter"): None,
-    ('4', "Ask gpt"): None,
+    ('2', "Notebook"): notebook_app,
+    ('3', "File sorter"): sorter_app,
+    ('4', "Ask gpt"): gpt_app,
     ('0', "Exit"): None,
 }
 
@@ -47,7 +47,10 @@ def main():
             user_input = completer_input('>>> ', menu_commands_list)
             for menu_line, app in MENU_MAPING.items():
                 if user_input.strip().startswith(menu_line):
-                    app()
+                    try:
+                        app()
+                    except SystemExit:
+                        pass
                     valid_input = True
                     break
                 elif user_input.strip().lower().startswith('0'):

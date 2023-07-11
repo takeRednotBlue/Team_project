@@ -1,8 +1,10 @@
 import os
+import time
 import sys
 import shutil
+
 from colorama import init
-from colorama import Fore, Back
+from colorama import Fore
 
 init()
 
@@ -194,9 +196,10 @@ def remove_all_unnecessary_folders(rootdir, dict_extentions):
             count_remove_all_unnecessary_folders += 1
     return  count_remove_all_unnecessary_folders
 
-def print_out_in_console(dict_fact_files, dict_known_unknown_extentions):
+def print_out_in_console(dict_fact_files, dict_known_unknown_extentions, rootdir):
+    print(Fore.GREEN +f"\nБуло успішно відсортовано каталог: {rootdir}")
     for key, value in dict_fact_files.items():
-        print(Fore.LIGHTMAGENTA_EX + f"     Каталог'{key}': {len(value)}")
+        print(Fore.LIGHTMAGENTA_EX + f"{' '*5}Каталог'{key}': {len(value)}")
         if key == "uknown_extension":
             dict_known_unknown_extentions["unknown extensions"].update(
                 i[(i).rfind(".") :].lower() for i in value
@@ -218,18 +221,16 @@ def print_out_in_console(dict_fact_files, dict_known_unknown_extentions):
 
 def validate_correct_path():
     rootdir = None
-    print(Fore.BLUE +  "    Вас вітає додаток 'Сортувальник'")
-    print(Fore.YELLOW +  "  Виберіть каталог для обробки ")
-    print(Fore.WHITE + "") 
     while True:
         rootdir = input(
-            "> Вкажіть шлях до каталогу, який потрібно відсортувати:"  
-            
+            "Вкажіть шлях до каталогу, який потрібно відсортувати ('exit' для виходу): "  
         ).strip()
-        if not os.path.exists(rootdir) and rootdir.lower() != "exit":
+        if not os.path.exists(rootdir)\
+                and not os.path.isdir(rootdir)\
+                and rootdir.lower() != "exit":
             print(
                 Fore.RED
-               + f"    Шлях не існує. Вкажіть шлях каталогу для сортування!"
+               + f"Помилка. Шляху не існує чи він вказує на файл. Перевірне коректність введеного шляху!"
             )
                        
             print(Fore.WHITE +  "Для завершення роботи - введіть 'exit'")
@@ -237,16 +238,30 @@ def validate_correct_path():
             break
     return rootdir
 
+def greet():
+    print()
+    print(Fore.BLUE +  f"{' '*5}Вас вітає додаток 'СOРТУВАЛЬНИК'")
+    print(Fore.YELLOW +  f"{' '*5}Виберіть каталог для обробки ")
+    print(Fore.WHITE + "") 
 
-def main(): 
-    dict_extentions = {
-        "Archives": ["ZIP", "GZ", "TAR", 'RAR', '7Z', 'TGZ', 'ISO', 'JAR', 'BZ2'],
-        "Video": ["AVI", "MP4", "MOV", "MKV", 'FLV', 'MPEG', '3GP', 'WEBM', 'VOB', 'DIVX'],
-        "Audio": ["MP3", "OGG", "WAV", "AMR"],
-        "Documents": ["DOC", "DOCX", "TXT", "PDF", "XLSX", "XLS", "PPTX","CAD", "DWG", "ODG", "ODT", "HTML", "URL"],
-        "Images": ["JPEG", "PNG", "JPG", "SVG"]
-    }
+dict_extentions = {
+    "Archives": ["ZIP", "GZ", "TAR", 'RAR', '7Z', 'TGZ', 'ISO', 'JAR', 'BZ2'],
+    "Video": ["AVI", "MP4", "MOV", "MKV", 'FLV', 'MPEG', '3GP', 'WEBM', 'VOB', 'DIVX'],
+    "Audio": ["MP3", "OGG", "WAV", "AMR"],
+    "Documents": ["DOC", "DOCX", "TXT", "PDF", "XLSX", "XLS", "PPTX","CAD", "DWG", "ODG", "ODT", "HTML", "URL"],
+    "Images": ["JPEG", "PNG", "JPG", "SVG"]
+}
 
+
+first_lauch = True
+
+def main():
+
+    global first_lauch
+    if first_lauch:
+        greet()
+        first_lauch = False
+        
     dict_fact_files = {
         "Archives": [],
         "Video": [],
@@ -255,30 +270,31 @@ def main():
         "Images": [],
         "uknown_extension": [],
     }
-    
 
     dict_known_unknown_extentions = {
         "known extensions": set(),
         "unknown extensions": set(),
     }
-
-    while True:
-        rootdir = validate_correct_path()
-        if rootdir.lower() == "exit":
-            print(Fore.BLUE +   "Вихід з сортувальника. Успіхів")
-            print (Fore.YELLOW +   "Слава Україні! - Героям Слава!")
-            sys.exit()
-        lst_all_files = []
-        lst_all_files = list_all_files_in_rootdir(rootdir, lst_all_files)
-        create_new_folders_in_rootdir(rootdir, dict_extentions)
-        move_and_normalize_and_unarchieve_files_into_correct_folders(
-            rootdir, dict_extentions, lst_all_files, dict_fact_files
-        )
-        normalize_all_files_and_folders_in_archieve(os.path.join(rootdir, "Archives"))
-        removed_folders = remove_all_unnecessary_folders(rootdir, dict_extentions)
-        print_out_in_console(dict_fact_files, dict_known_unknown_extentions)
-        print(Fore.LIGHTCYAN_EX +         f'Видалені каталоги: {removed_folders}')
-        main()
+        
+    # while True:
+    rootdir = validate_correct_path()
+    if rootdir.lower() == "exit":
+        first_lauch = True
+        print(Fore.BLUE  + "Вихід з сортувальника. Успіхів")
+        print (Fore.YELLOW  + "Слава Україні! - Героям Слава!" + Fore.WHITE)
+        time.sleep(0.5)
+        sys.exit()
+    lst_all_files = []
+    lst_all_files = list_all_files_in_rootdir(rootdir, lst_all_files)
+    create_new_folders_in_rootdir(rootdir, dict_extentions)
+    move_and_normalize_and_unarchieve_files_into_correct_folders(
+        rootdir, dict_extentions, lst_all_files, dict_fact_files
+    )
+    normalize_all_files_and_folders_in_archieve(os.path.join(rootdir, "Archives"))
+    removed_folders = remove_all_unnecessary_folders(rootdir, dict_extentions)
+    print_out_in_console(dict_fact_files, dict_known_unknown_extentions, rootdir)
+    print(Fore.LIGHTCYAN_EX + f'Видалені каталоги: {removed_folders}' + Fore.WHITE)
+    main()
 
 
 if __name__ == "__main__":

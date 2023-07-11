@@ -1,4 +1,4 @@
-from gpt_response import gpt_response
+from openai_gpt.gpt_response import gpt_response
 
 
 
