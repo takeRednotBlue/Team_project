@@ -7,7 +7,8 @@ from faker import Faker
 from email_validator import validate_email, EmailUndeliverableError
 from phonenumbers import is_valid_number, parse
 
-from addressbook_class import *
+from addressbook.addressbook_class import *
+from utilities import completer_input
 
 def input_error(func):
     @wraps(func)
@@ -310,6 +311,7 @@ command = {
     "help": help_me,
 }
 
+commands_list = list(command)
 
 @input_error
 def command_parser(string: str):
@@ -338,7 +340,7 @@ def main():
                 "Якщо не знаєте яку команду ввести, скористайтесь командою << help >>")
             flag = False
 
-        start_text = input(">>> Введіть команду: ")
+        start_text = completer_input(">>> ", commands_list)
         command, args = command_parser(start_text)
         print(command(book1, *args))
 
