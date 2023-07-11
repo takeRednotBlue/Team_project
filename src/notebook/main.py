@@ -84,7 +84,8 @@ def note_book():
 
                     with open(path, 'wb') as file:
                         pickle.dump(note_book, file)
-                        
+
     except KeyboardInterrupt:
+        print('Будь ласка, користуйся командами для завершення роботи')
         with open(path, 'wb') as file:
             pickle.dump(note_book, file)
