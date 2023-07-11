@@ -1,8 +1,8 @@
 from pathlib import Path
 import pickle
-from classes import NoteBook
-import handler as hd 
-# from ..utilities import completer_input
+from .classes import NoteBook
+from .handler import * 
+from utilities import completer_input
 
 
 def input_error_handler(func):
@@ -13,11 +13,11 @@ def input_error_handler(func):
         
         except KeyError as key_error:
             print(f"Невірна команда: {key_error}")
-            main(*args, **kwargs)
+            note_book(*args, **kwargs)
 
         except TypeError as type_error:
             print(f"Цю команду можна використовувати тільки для нотатки\nЩоб обрати нотатку: <search> <тег/текс нотатки>")
-            main(*args, **kwargs)
+            note_book(*args, **kwargs)
 
     return wrapper
 
@@ -27,51 +27,58 @@ def close(path, note_book):
     with open(path, 'wb') as file:
         pickle.dump(note_book, file)
 
-
+first_start = True
 @input_error_handler
-def main():
+def note_book():
     
+    global first_start
+    if first_start:
+        print('НОТАТКИ 📖\nТут ви можете зберігати свої нотатки')
+        first_start = False
+
     path = Path(__file__).parent / 'note_book.txt'
-    print(hd.HELP_TABLE)
-    with open(path, 'rb') as file:
+    print(HELP_TABLE)
+    with open(path, 'ab+') as file:
         if not file.read(): #empty file (first start)
             
-            with open(path, 'wb') as file:
-                note_book = NoteBook()
-                pickle.dump(note_book, file)
+            
+            note_book = NoteBook()
+            pickle.dump(note_book, file)
 
-        with open(path, 'rb') as file:
-            note_book = pickle.load(file)
+    with open(path, 'rb') as file:
+        note_book = pickle.load(file)
 
     while True:
-        # string = completer_input('>>>', ['add', 'delete'])
-        string = input('>>> ')
-        command, value = hd.parser(string)
+        string = completer_input('>>> ', COMMAND_INPUT)
+        # string = input('>>> ')
+        command, value = parser(string)
 
         if command == 'close':
             close(path, note_book)
+            first_start = True
             break
 
-        result = hd.COMMAND_DICT[command](note_book, value)
+        result = COMMAND_DICT[command](note_book, value)
         with open(path, 'wb') as file:
             pickle.dump(note_book, file)
 
         if command == 'close':
             close(path, note_book)
+            first_start = True
             break
-
-        # Для роботи з вибраною нотаткою 
+        
         if result:
-            new_command, new_value, note = result
+            menu_command, menu_value, note = result
 
-            if new_command == 'close':
-                close(path, note_book)
-                break
+            while menu_command != 'close':
+                res = COMMAND_DICT[menu_command](note_book, menu_value, note)
+                
+                if res == 'close':
+                    with open(path, 'wb') as file:
+                        pickle.dump(note_book, file)
+                    break
 
-            hd.COMMAND_DICT[new_command](note_book, new_value, note)
-            with open(path, 'wb') as file:
-                pickle.dump(note_book, file)
+                menu_command, menu_value, note = COMMAND_DICT[command](note_book, value, search_result=False)
 
-if __name__ == '__main__':
-    
-    main()
+                with open(path, 'wb') as file:
+                    pickle.dump(note_book, file)

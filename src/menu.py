@@ -2,6 +2,7 @@
 # from cli_bot import address_book_app
 from utilities import completer_input, kb_interrupt_error
 from logo import LOGO
+from notebook import note_book
 
 
 def exit_bot():
@@ -22,7 +23,7 @@ def print_menu():
 
 MENU_MAPING = {
     ('1', "Address book"): None,
-    ('2', "Notebook"): None,
+    ('2', "Notebook"): note_book,
     ('3', "File sorter"): None,
     ('4', "Ask gpt"): None,
     ('0', "Exit"): None,
@@ -49,7 +50,7 @@ def main():
                     app()
                     valid_input = True
                     break
-                elif user_input.strip().lower().startswith('exit'):
+                elif user_input.strip().lower().startswith('0'):
                     exit_bot()
                     valid_input = True
                     is_working = False

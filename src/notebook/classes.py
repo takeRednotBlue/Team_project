@@ -6,22 +6,22 @@ class Note():
         self.createde_time = datetime.now()
         self.name = name
         self.text = text
-        self.tags = []
+        self.tags = set()
         if tags:
-            self.tags.extend(tags)
+            self.tags.update(tags)
 
 
     def add_tags(self, tags):
-        self.tags.extend(tags)
+        self.tags.update(tags)
 
     def change_tags(self, new_tags):
-        self.tags = [*new_tags]
+        self.tags = set([*new_tags])
 
     def change_note(self, new_value):
         self.text = new_value
 
     def clean_tag(self):
-        self.tags = []
+        self.tags = set()
 
     def __eq__(self, obj: object) -> bool:
         return self.createde_time == obj.createde_time
@@ -73,6 +73,7 @@ class NoteBook():
         for i in self.data:
             if i == note:
                 del self.data[self.data.index(note)]
+
 
     def change(self, new_value, note):
         self.delete(note) 

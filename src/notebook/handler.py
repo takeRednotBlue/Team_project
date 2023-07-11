@@ -1,5 +1,5 @@
 from prettytable import PrettyTable
-
+from utilities import completer_input
 
 def parser(string: str) -> tuple:
     string = string.strip().casefold()
@@ -41,7 +41,8 @@ def add_note_to_book(book, value):
             else:
                 print('Не можна зберегти порожні теги')
 
-        print(f'Нотатка "{new_note.name}" збережена')
+        print(f'Нотатка "{new_note.name}" збережена, <help> - список команд')
+        
 
     else:
         if not cheack_similar:
@@ -90,6 +91,11 @@ def show(book, mode=None):
                         counter += 1
                         if not counter % 100:
                             text += '\n' 
+
+                        if len(text) > 296:
+                            text += '... '
+                            break
+
                     table.add_row([note.name, note_tags, text], divider=True)        
 
                 else:
@@ -97,23 +103,27 @@ def show(book, mode=None):
                     table.add_row([note.name, note_tags, note.text], divider=True)
 
             print(table)
-            print('Щоб працювати з нотаткою треба обрати одну:\nsearch <назва нотатки|теги>')
+            print('Щоб працювати з нотаткою треба обрати одну: search <назва нотатки|теги>, help - список команд')
         else:
             print('Книга нотатків порожня')
 
 def delete(book, _, note):
     book.delete(note)
     print(f'"{note.name}" - успішно видалено')
+    print('Меню редагування нотатки закрито')
+    return 'close'
 
 def change(book, new_value, note):
     
     if new_value:
         note.change_note(new_value)
         print(f'нотатка "{note.name}" змінена на "{new_value}"')
-
+        # search(book, note.name)
+        
+    
     else:
         print('Нотатка не може бути порожньою')
-        search(book, note.name)
+        
 
 def cont(*_):
     pass
@@ -127,12 +137,17 @@ def help(*_):
 def tags(book, command, note):
     
     if command not in ['change', 'clean', 'add']:
-        search(book, note.name)
+        return 'search', note.name
 
     else:
         if command == 'clean':
-            print(f'теги {note.tags} успішно видалені')
-            note.clean_tag()
+            if note.tags:
+                print(f'Tеги {note.tags} успішно видалені')
+                note.clean_tag()
+                return 'search', note.name
+            else:
+                print(f'"{note.name}" не має тегів')
+                return 'search', note.name
 
         elif command == 'add':
             new_tags = input('Щоб додати, введіть теги через пробіл, (натисніть Enter, щоб відмінити)\n>>> ')
@@ -140,9 +155,10 @@ def tags(book, command, note):
             new_tags = [t for t in new_tags if t] # Видаляє пусті теги ("")
             if new_tags:
                 note.add_tags(new_tags)
-                print(f'Теги {new_tags} додані до "{note.name}"')
+                print(f'Теги {set(new_tags)} додані до "{note.name}"')
+                return 'search', note.name
             else:
-                print('Меню закрито')
+                print('Меню редагування нотатки закрито')
                 print(HELP_TABLE)
         
         elif command == 'change':
@@ -150,13 +166,20 @@ def tags(book, command, note):
             new_tags = new_tags.split(' ')
             new_tags = [t for t in new_tags if t] # Видаляє пусті теги ("")
             if new_tags:
-                print(f'Теги {note.tags} змінені на {new_tags}')
+                tags = note.tags
+                if tags:
+                    print(f'Теги {note.tags} змінені на {set(new_tags)}')
+
+                else:
+                    print(f'Теги {set(new_tags)} додані до {note.name}')
+                    
                 note.change_tags(new_tags)
+                return 'search', note.name
             else:
-                print('Меню закрито')
+                print('Меню редагування нотатки закрито')
                 print(HELP_TABLE)
 
-def search(book, value):
+def search(book, value, search_result= True):
     result = book.search(value)
 
     table = PrettyTable(['Назва', 'Теги', 'Нотатка'])
@@ -170,23 +193,29 @@ def search(book, value):
                 text += i
                 counter += 1
                 if not counter % 100:
-                    text += '\n' 
+                    text += '\n'
+
+                if len(text) > 296:
+                            text += '... '
+                            break
+                 
             table.add_row([note.name, note_tags, text], divider=True)
         else:
             note_tags = ', '.join(note.tags)
             table.add_row([note.name, note_tags, note.text], divider=True)
 
     if not result:
-        print('Нічого не знайдено')
+        print('Нічого не знайдено, щоб знайти нотатку: search <назва|тег нотатки>')
 
     elif len(result) == 1:
 
-        print('\t\t\t Результат пошуку')
-        print(table)
+        if search_result:
+            print('Результат пошуку')
+            print(table)
         input_2 = ''
         while not input_2.startswith(('change')) and input_2 not in ['delete', 'close', 'tags add', 'tags change', 'tags clean']:
             print('\t\t\t\tМеню нотатки')
-            input_2 = input(f'{HELP_NOTE_TABLE}\n>>> ').casefold().strip()
+            input_2 = completer_input(f'{HELP_NOTE_TABLE}\n>>> ', COMMAND_INPUT_MENU).casefold().strip()
 
             if input_2.startswith(('show', 'search', 'add', 'help')):
                 print(f'Команда "{input_2}" не доступна в меню нотатки')
@@ -195,25 +224,31 @@ def search(book, value):
                     print(f'Невірна команда "{input_2}", оберіть команду з списку:')
 
         if input_2 == 'close':
-            print('Меню закрито')
-            print('<help> список команд')
+            print('Меню редагування нотатки закрито')
+            print('<help> - список команд')
+            return 'close', '_', '_'
+        
         else:
             command, value = parser(input_2)
             return command, value, note
         
     else:
-        print('\t\t  Результат пошуку')
+        print('Результат пошуку')
         print(table)
-        choose_note_name = input('Щоб працювати з нотаткою, терба обрати одну\nВведіть повну назву бажоної нотатки\n>>> ')
+        choose_note_name = input('Щоб працювати з нотаткою, терба обрати одну\nБудь ласка, укажіть повну назву необхідної нотатки (cont - відмінити) \n>>> ')
 
-        while choose_note_name not in [note.name for note in result] and choose_note_name != 'close':
-            print('\t\t  Результат пошуку')
+        while choose_note_name not in [note.name for note in result] and choose_note_name != 'close' and choose_note_name != 'cont':
+            print('Результат пошуку')
             print(table)
-            choose_note_name = input('Щоб працювати з нотаткою, терба обрати одну\nНапишіть назву нотатки\n>>> ')
+            choose_note_name = input('Щоб працювати з нотаткою, терба обрати одну\nБудь ласка, укажіть повну назву необхідної нотатки (cont - відмінити) \n>>> ')
 
         if choose_note_name == 'close':
             return 'close', '_', '_'
         
+        elif choose_note_name == 'cont':
+            print('Меню вибору нотатки закрито')
+            print('<help> - список команд')
+            return 
         
         search(book, choose_note_name) #рекурсивно викликаємо функцію коли обрали одну нотатку
 
@@ -231,10 +266,13 @@ COMMAND_DICT = {
     'tags': tags
 }
 
+COMMAND_INPUT = ['add', 'show', 'search', 'close', 'help']
+COMMAND_INPUT_MENU = ['delete', 'change', 'tags clean', 'tags change', 'tags add', 'close']
+
 HELP_TABLE = PrettyTable(['Команди', 'Пояснення'])
 HELP_TABLE.add_row(['add <назва нотатки> <текс нотатки>', 'створити нову нотатку (назва без пробілів)',], divider=True)
 HELP_TABLE.add_row(['show <date|alp|size>', "вивести всі нотатки, сортувати за датою|алфавітом|розміром (не обов'язково)"], divider=True)
-HELP_TABLE.add_row(['search <тег|назва нотатки>', 'пошук нотатки за тегами або назвою'], divider=True)
+HELP_TABLE.add_row(['search <тег|назва нотатки>', 'пошук нотатки за тегами або назвою нотатки'], divider=True)
 HELP_TABLE.add_row(['close', 'завершити роботу',], divider=True)
 HELP_TABLE.add_row(['help', 'список команд',], divider=True)
 
