@@ -1,4 +1,6 @@
 from logo import LOGO
+
+from addressbook import main
 from file_sorter import sorter_app
 from openai_gpt import gpt_app
 from notebook import notebook_app
