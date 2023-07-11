@@ -69,6 +69,7 @@ def gpt_app():
         gpt_app()
     except APIConnectionError:
         print('>>> будь ласка перевірте своє поєднання з інтернетом')
+        gpt_app()
 
 if __name__ == "__main__":
     print('Привіт, це короткий гайд використання бота помічника:\
