@@ -1,5 +1,4 @@
 from colorama import Fore, init
-import json
 import os 
 import openai
 from openai.error import AuthenticationError, ServiceUnavailableError, APIConnectionError
@@ -66,16 +65,16 @@ END_COMMANS = ['exit', 'good bye', 'close']
 
 
 
-first_start = True
+first_launch = True
 
 def gpt_app():
     try:
         file_path = DATA_DIRECTORY / 'key.bin'
 
-        global first_start
-        if first_start:
+        global first_launch
+        if first_launch:
             greeting()
-            first_start = False
+            first_launch = False
         
         if os.path.exists(file_path):
             with open(file_path, 'rb') as fh:
@@ -109,14 +108,14 @@ def gpt_app():
                 print(story)
             elif command in END_COMMANS:
                 print('Сподіваюсь, ти скоро повернешся! Не забувай контролювати свій баланс.')
-                first_start = True
+                first_launch = True
                 is_working = False
             else:
                 gpt_answer(arguments, story)
 
     except KeyboardInterrupt:
         print('\nБудь ласка, користуйся командами для завершення роботи боту.')
-        first_start = True
+        first_launch = True
     except (AuthenticationError, UnicodeEncodeError):
         print('Упс... відбулася помилка аутентифікації. Будь ласка, введи коректний API ключ, який можна отримати на сайті: https://platform.openai.com/account/api-keys')
         if os.path.exists(file_path):

@@ -33,18 +33,21 @@ def close(path, note_book):
     with open(path, 'wb') as file:
         pickle.dump(note_book, file)
 
-first_start = True
+def greeting():
+    print()
+    print('{:<116}'.format(Fore.BLUE + f'{" "*5}Вас вітає додаток НОТАТКИ 📖'))
+    print('{:<116}'.format(Fore.YELLOW + f'{" "*5}Тут ви можете зберігати свої нотатки та керувати ними' + Fore.WHITE))
+    print()
+
+first_launch = True
+
 @input_error_handler
 def note_book():
-    
     try:
-        global first_start
-        if first_start:
-            print()
-            print('{:<116}'.format(Fore.BLUE + f'{" "*5}Вас вітає додаток НОТАТКИ 📖'))
-            print('{:<116}'.format(Fore.YELLOW + f'{" "*5}Тут ви можете зберігати свої нотатки та керувати ними' + Fore.WHITE))
-            print()
-            first_start = False
+        global first_launch
+        if first_launch:
+            greeting()
+            first_launch = False
 
         path = DATA_DIRECTORY / 'notebook_data.bin'
         print(HELP_TABLE)
@@ -63,7 +66,7 @@ def note_book():
 
             if command == 'close':
                 close(path, note_book)
-                first_start = True
+                first_launch = True
                 break
 
             result = COMMAND_DICT[command](note_book, value)
@@ -72,7 +75,7 @@ def note_book():
 
             if command == 'close':
                 close(path, note_book)
-                first_start = True
+                first_launch = True
                 break
             
             if result:

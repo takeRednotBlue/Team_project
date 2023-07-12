@@ -1,6 +1,5 @@
 from collections import UserDict
 from datetime import datetime
-from itertools import islice
 from email_validator import validate_email
 import phonenumbers
 import pickle

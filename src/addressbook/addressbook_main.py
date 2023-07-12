@@ -360,6 +360,13 @@ def fake(book):
         birthday_add(book, contact, birthday)
         home_add(book, contact, city)
 
+def greeting():
+    print()
+    print('{:<116}'.format(Fore.BLUE + f'{" "*5}Вас вітає додаток АДРЕСНА КНИГА 📖'))
+    print('{:<116}'.format(Fore.YELLOW + f'{" "*5}Тут ви можете зберігати свої контакти та керувати ними' + Fore.WHITE))
+    print('{:<116}'.format(f'{" "*5}Якщо не знаєте яку команду ввести, скористайтесь командою < help > чи натисні TAB для швидкого вибору'))
+    print()
+
 
 is_ended = False
 
@@ -375,16 +382,12 @@ def main():
 
     # fake(book1)
     
-    first_lauch = True
+    first_launch = True
     try:
         while not is_ended:
-            if first_lauch:
-                print()
-                print('{:<116}'.format(Fore.BLUE + f'{" "*5}Вас вітає додаток АДРЕСНА КНИГА 📖'))
-                print('{:<116}'.format(Fore.YELLOW + f'{" "*5}Тут ви можете зберігати свої контакти та керувати ними' + Fore.WHITE))
-                print('{:<116}'.format(f'{" "*5}Якщо не знаєте яку команду ввести, скористайтесь командою < help > чи натисні TAB для швидкого вибору'))
-                print()
-                first_lauch = False
+            if first_launch:
+                greeting()
+                first_launch = False
 
             start_text = completer_input(">>> ", commands_list)
             command, args = command_parser(start_text)
