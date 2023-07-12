@@ -81,7 +81,7 @@ def gpt_app():
                 encoded_key = fh.read()
                 openai.api_key = encoded_key.decode('utf-16').strip('"')
         else:
-            key = input('Будь ласка, введіть ключ AI:')
+            key = input('Будь ласка, введіть ключ API:')
             if key:
                 choose = input('Ви хочете зберегти свій ключ API?, введіть (Y/n):')
                 if choose != 'n':
