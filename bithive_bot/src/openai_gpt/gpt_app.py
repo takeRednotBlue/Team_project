@@ -3,8 +3,8 @@ import os
 import openai
 from openai.error import AuthenticationError, ServiceUnavailableError, APIConnectionError
 
-from utilities import commands_parser
-from data_storage import DATA_DIRECTORY
+from ..utilities import commands_parser
+from ..data_storage import DATA_DIRECTORY
 
 init()
 

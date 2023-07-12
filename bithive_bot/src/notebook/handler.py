@@ -1,5 +1,5 @@
 from prettytable import PrettyTable
-from utilities import completer_input
+from ..utilities import completer_input
 
 def parser(string: str) -> tuple:
     string = string.strip().casefold()

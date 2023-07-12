@@ -1,1 +1,0 @@
-from openai_gpt.gpt_app import gpt_app 

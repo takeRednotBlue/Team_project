@@ -2,11 +2,11 @@ from colorama import init, Fore
 import pickle
 from pathlib import Path
 
-from utilities import completer_input
-from data_storage import DATA_DIRECTORY
+from ..utilities import completer_input
+from ..data_storage import DATA_DIRECTORY
 
-from notebook.classes import NoteBook
-from notebook.handler import * 
+from ..notebook.classes import NoteBook
+from ..notebook.handler import * 
 
 init()
 
