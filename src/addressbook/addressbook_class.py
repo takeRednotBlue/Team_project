@@ -177,18 +177,24 @@ class Record:
 
 
 class AddressBook(UserDict):
-    def load_from_file(self, filename):
-        with open(filename, "rb") as file:
-            self.data = pickle.load(file)
+    def __init__(self, filename):
+        super().__init__()
+        self.filename = filename
 
-    def save_to_file(self, filename):
-        with open(filename, "wb") as file:
-            pickle.dump(self.data, file)
+
+    def load_from_file(self):
+        with open(self.filename, "rb") as file:
+            book = pickle.load(file)
+        return book
+
+    def save_to_file(self):
+        with open(self.filename, "wb") as file:
+            pickle.dump(self, file)
     
     def search(self, sample: str) -> list:
         searching = []
         for contact in self.data.values():
-            if sample in str(contact):
+            if sample.lower() in str(contact).lower():
                 searching.append(contact)
         return searching
 

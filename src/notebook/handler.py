@@ -5,7 +5,7 @@ def parser(string: str) -> tuple:
     string = string.strip().casefold()
     words_list = string.split(' ')
 
-    if words_list[0] == 'close':
+    if words_list[0] in END_COMMANDS:
         return 'close', '_'
 
     command = words_list[0]
@@ -215,7 +215,7 @@ def search(book, value, search_result= True):
         input_2 = ''
         while not input_2.startswith(('change')) and input_2 not in ['delete', 'close', 'tags add', 'tags change', 'tags clean']:
             print('\t\t\t\tМеню нотатки')
-            input_2 = completer_input(f'{HELP_NOTE_TABLE}\n>>> (note) ', COMMAND_INPUT_MENU).casefold().strip()
+            input_2 = completer_input(f'{HELP_NOTE_TABLE}\n>>> (editnote) ', COMMAND_INPUT_MENU).casefold().strip()
 
             if input_2.startswith(('show', 'search', 'add', 'help')):
                 print(f'Команда "{input_2}" не доступна в меню нотатки')
@@ -265,6 +265,8 @@ COMMAND_DICT = {
     'help': help,
     'tags': tags
 }
+
+END_COMMANDS = ['exit', 'close', 'quit']
 
 COMMAND_INPUT = ['add', 'show', 'search', 'close', 'help']
 COMMAND_INPUT_MENU = ['delete', 'change', 'tags clean', 'tags change', 'tags add', 'close']

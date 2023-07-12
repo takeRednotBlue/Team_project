@@ -3,6 +3,7 @@ import pickle
 from pathlib import Path
 
 from utilities import completer_input
+from data_storage import DATA_DIRECTORY
 
 from notebook.classes import NoteBook
 from notebook.handler import * 
@@ -45,7 +46,7 @@ def note_book():
             print()
             first_start = False
 
-        path = Path(__file__).parent / 'note_book.txt'
+        path = DATA_DIRECTORY / 'notebook_data.bin'
         print(HELP_TABLE)
         with open(path, 'ab+') as file:
             if not file.read(): #empty file (first start)

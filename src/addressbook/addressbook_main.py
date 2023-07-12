@@ -1,14 +1,17 @@
-import re
 from functools import wraps
-from pathlib import Path
+import re
 
-from tabulate import tabulate
-from faker import Faker
 from email_validator import validate_email, EmailUndeliverableError
+from colorama import Fore, init
+from faker import Faker
 from phonenumbers import is_valid_number, parse
+from tabulate import tabulate
 
 from addressbook.addressbook_class import *
 from utilities import completer_input
+from data_storage import DATA_DIRECTORY
+
+init()
 
 def input_error(func):
     @wraps(func)
@@ -282,13 +285,10 @@ def exit(book: AddressBook, *args):
     """
     global is_ended
     is_ended = True
-    book.save_to_file('saving.bin')
+    book.save_to_file()
     return "До зустрічі!"
 
 
-@input_error
-def no_command(*args):
-    return "Нажаль, такої команди немає, скористайтесь \"help\""
 
 
 command = {
@@ -321,28 +321,11 @@ def command_parser(string: str):
             return value, re.sub(key, "", splitted_str, flags=re.IGNORECASE).strip().rsplit(" ", 1 )
     return no_command, []
 
+@input_error
+def no_command(*args):
+    return "Нажаль, такої команди немає, скористайтесь \"help\""
 
-is_ended = False
 
-
-def main():
-    global book1
-    book1 = AddressBook()
-    if Path('saving.bin').exists():
-        book1.load_from_file('saving.bin')
-
-    fake(book1)
-
-    flag = True
-    while not is_ended:
-        if flag:
-            print("Привіт. Це бот-помічник для керування адресною книгою.\n"
-                "Якщо не знаєте яку команду ввести, скористайтесь командою << help >>")
-            flag = False
-
-        start_text = completer_input(">>> ", commands_list)
-        command, args = command_parser(start_text)
-        print(command(book1, *args))
 
 def fake(book):
     fake = Faker('uk_UA')
@@ -376,6 +359,41 @@ def fake(book):
         email_add(book, contact, email)
         birthday_add(book, contact, birthday)
         home_add(book, contact, city)
+
+
+is_ended = False
+
+def main():
+
+    global is_ended
+    
+    filename = DATA_DIRECTORY / 'addressbook_data.bin'
+    if filename.exists():
+        book1 = AddressBook(filename).load_from_file()
+    else:
+        book1 = AddressBook(filename)
+
+    # fake(book1)
+    
+    first_lauch = True
+    try:
+        while not is_ended:
+            if first_lauch:
+                print()
+                print('{:<116}'.format(Fore.BLUE + f'{" "*5}Вас вітає додаток АДРЕСНА КНИГА 📖'))
+                print('{:<116}'.format(Fore.YELLOW + f'{" "*5}Тут ви можете зберігати свої контакти та керувати ними' + Fore.WHITE))
+                print('{:<116}'.format(f'{" "*5}Якщо не знаєте яку команду ввести, скористайтесь командою < help > чи натисні TAB для швидкого вибору'))
+                print()
+                first_lauch = False
+
+            start_text = completer_input(">>> ", commands_list)
+            command, args = command_parser(start_text)
+            print(command(book1, *args))
+        else:
+            is_ended = False
+    except KeyboardInterrupt:
+        print('Будь ласка, користуйся командами для завершення роботи')
+        book1.save_to_file()
 
 
 
