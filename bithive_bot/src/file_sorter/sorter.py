@@ -6,6 +6,7 @@ import shutil
 from colorama import init
 from colorama import Fore
 
+from ..utilities import kb_interrupt_error
 init()
 
 
@@ -184,15 +185,16 @@ def move_and_normalize_and_unarchieve_files_into_correct_folders(
             )
             dict_fact_files["uknown_extension"].append(normalize(file.name))
 
-def remove_all_unnecessary_folders(rootdir, dict_extentions):
-    count_remove_all_unnecessary_folders = 0
-    for it in os.scandir(rootdir):
-        if (
-            it.is_dir()
-            and it.name not in dict_extentions.keys()
-            and it.name != "uknown_extension"
-        ):
-            shutil.rmtree(it, ignore_errors=True)
+count_remove_all_unnecessary_folders = 0
+def remove_all_unnecessary_folders(path):
+
+    global count_remove_all_unnecessary_folders
+
+    for root, dirs, files in os.walk(path, topdown=False):
+        for dir in dirs:
+            remove_all_unnecessary_folders(os.path.join(root, dir))
+        if not dirs and not files:
+            os.rmdir(root) # os.rmdir() removes only if dir is empty
             count_remove_all_unnecessary_folders += 1
     return  count_remove_all_unnecessary_folders
 
@@ -255,9 +257,10 @@ dict_extentions = {
 
 first_lauch = True
 
+@kb_interrupt_error
 def main():
 
-    global first_lauch
+    global first_lauch,count_remove_all_unnecessary_folders
     if first_lauch:
         greet()
         first_lauch = False
@@ -291,7 +294,8 @@ def main():
         rootdir, dict_extentions, lst_all_files, dict_fact_files
     )
     normalize_all_files_and_folders_in_archieve(os.path.join(rootdir, "Archives"))
-    removed_folders = remove_all_unnecessary_folders(rootdir, dict_extentions)
+    removed_folders = remove_all_unnecessary_folders(rootdir)
+    count_remove_all_unnecessary_folders = 0
     print_out_in_console(dict_fact_files, dict_known_unknown_extentions, rootdir)
     print(Fore.LIGHTCYAN_EX + f'Видалені каталоги: {removed_folders}' + Fore.WHITE)
     main()
