@@ -232,7 +232,8 @@ def show_all(book: AddressBook, *args):
     Виведе на екран всі контакти у колонках.
     """
     table_data = []
-    for contact in book.data.values():
+    sorted_values = sorted(list(book.data.values()), key=lambda x: x.name.value)
+    for contact in sorted_values:
         name = contact.name.value
         phone = ", ".join([str(phone) for phone in contact.phones])
         email = str(contact.email) if contact.email else "Не вказано"
