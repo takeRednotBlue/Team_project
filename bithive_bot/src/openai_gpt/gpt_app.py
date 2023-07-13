@@ -39,7 +39,7 @@ def gpt_answer(args: list, story: str) -> None:
     print('Зачекайте, будь ласка, готую вам найкращу відповідь...')
     response = gpt_response(prompt, story)
     
-    print(f'>>> (stepan): {response}')
+    print(f'\n>>> (stepan): {response}\n')
 
 def set_story(args: list) -> None:
     story = ' '.join(args)
