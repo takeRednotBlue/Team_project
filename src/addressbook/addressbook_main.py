@@ -1,3 +1,4 @@
+
 from functools import wraps
 import re
 
@@ -7,9 +8,9 @@ from faker import Faker
 from phonenumbers import is_valid_number, parse
 from tabulate import tabulate
 
-from ..addressbook.addressbook_class import *
-from ..utilities import completer_input
-from ..data_storage import DATA_DIRECTORY
+from addressbook.addressbook_class import *
+from utilities import completer_input
+from data_storage import DATA_DIRECTORY
 
 init()
 

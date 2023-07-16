@@ -6,7 +6,7 @@ import shutil
 from colorama import init
 from colorama import Fore
 
-from ..utilities import kb_interrupt_error
+from utilities import kb_interrupt_error
 init()
 
 
