@@ -1,10 +1,11 @@
-from .logo import LOGO
+from logo import LOGO
 
-from .addressbook import addressbook_app
-from .file_sorter import sorter_app
-from .openai_gpt import gpt_app
-from .notebook import notebook_app
-from .utilities import completer_input, kb_interrupt_error
+from addressbook import addressbook_app
+from file_sorter import sorter_app
+from updated_sorter import upd_sorter_app
+from openai_gpt import gpt_app
+from notebook import notebook_app
+from utilities import completer_input, kb_interrupt_error
 
 
 def exit_bot():
@@ -26,7 +27,8 @@ def print_menu():
 MENU_MAPING = {
     ('1', "Address book"): addressbook_app,
     ('2', "Notebook"): notebook_app,
-    ('3', "File sorter"): sorter_app,
+    # ('3', "File sorter"): sorter_app,
+    ('3', "File sorter"): upd_sorter_app,
     ('4', "Ask gpt"): gpt_app,
     ('0', "Exit"): None,
 }

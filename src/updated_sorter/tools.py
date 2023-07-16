@@ -1,8 +1,11 @@
-import re
-import os
-import shutil
-from pathlib import Path
+from colorama import Fore, init
 from datetime import datetime
+import os
+from pathlib import Path
+import re
+import shutil
+
+init()
 
 def translitterate(text: str) -> str:
     TRANS_DICT = {}
@@ -304,5 +307,36 @@ def create_backup_copy(path: str|Path):
     shutil.make_archive(archive_name, 'zip', path)
     back_up_path = archive_name.with_suffix(".zip")
     back_up_path.rename(path / f"{archive_name.name}.zip")
+
+
+def validate_correct_path():
+    rootdir = None
+    while True:
+        rootdir = input(
+            "Вкажіть шлях до каталогу, який потрібно відсортувати ('exit' для виходу): "  
+        ).strip()
+        if not os.path.exists(rootdir)\
+                and not os.path.isdir(rootdir)\
+                and rootdir.lower() != "exit":
+            print(
+                Fore.RED
+               + f"Помилка. Шляху не існує чи він вказує на файл. Перевірне коректність введеного шляху!"
+            )
+                       
+            print(Fore.WHITE +  "Для завершення роботи - введіть 'exit'")
+        else:
+            break
+    return rootdir
+
+def greet():
+    print()
+    print(Fore.BLUE +  f"{' '*5}Вас вітає додаток 'СOРТУВАЛЬНИК'")
+    print(Fore.YELLOW +  f"{' '*5}Виберіть каталог для обробки ")
+    print(Fore.WHITE + "") 
+
+
+
+
+
 
 

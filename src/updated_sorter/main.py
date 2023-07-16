@@ -9,8 +9,9 @@
 """
 
 import sys
-from clean_folder_by_MK.tools import *
+from updated_sorter.tools import *
 from pathlib import Path
+from utilities import kb_interrupt_error
 
 def clean_folder(path, backup=False):
     path = Path(path)
@@ -58,20 +59,32 @@ f'''
         for pair in normalized_log:
             rep.write(f"{pair[0]} --> {pair[1]}\n")
 
+first_lauch = True
+
+@kb_interrupt_error
 def main():
-    if len(sys.argv) == 3 and sys.argv[2] == 'backup':
-        backup_archive = True
-    else:
-        backup_archive = False
+
+    global first_lauch
+    if first_lauch:
+        greet()
+        first_lauch = False
     
-    try:
-        path = rf"{sys.argv[1]}"
-        try:
-            clean_folder(path, backup_archive)
-        except FileNotFoundError as e:
-            print(f"Invalid path argument: {e}. Path may contain whitespaces.")
-    except IndexError as err:
-        print(f"At least 1 argument should be passed: {err}")
+    path = validate_correct_path()
+
+    # if len(sys.argv) == 3 and sys.argv[2] == 'backup':
+    #     backup_archive = True
+    # else:
+    #     backup_archive = False
+    clean_folder(path)
+    # try:
+    #     path = rf"{sys.argv[1]}"
+    #     try:
+    #         # clean_folder(path, backup_archive)
+    #         clean_folder(path)
+    #     except FileNotFoundError as e:
+    #         print(f"Invalid path argument: {e}. Path may contain whitespaces.")
+    # except IndexError as err:
+    #     print(f"At least 1 argument should be passed: {err}")
 
 
 if __name__ == '__main__':
