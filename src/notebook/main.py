@@ -3,7 +3,7 @@ import pickle
 from pathlib import Path
 
 from utilities import completer_input
-from data_storage import DATA_DIRECTOR
+from data_storage import DATA_DIRECTORY
 from notebook.classes import NoteBook
 from notebook.handler import * 
 

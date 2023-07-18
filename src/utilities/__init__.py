@@ -1,3 +1,3 @@
-from parsers import commands_parser
-from command_completer import completer_input
-from error_handlers import kb_interrupt_error
+from utilities.parsers import commands_parser
+from utilities.command_completer import completer_input
+from utilities.error_handlers import kb_interrupt_error

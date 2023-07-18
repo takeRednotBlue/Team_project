@@ -69,22 +69,30 @@ def main():
         greet()
         first_lauch = False
     
-    path = validate_correct_path()
+    while True:
 
-    # if len(sys.argv) == 3 and sys.argv[2] == 'backup':
-    #     backup_archive = True
-    # else:
-    #     backup_archive = False
-    clean_folder(path)
-    # try:
-    #     path = rf"{sys.argv[1]}"
-    #     try:
-    #         # clean_folder(path, backup_archive)
-    #         clean_folder(path)
-    #     except FileNotFoundError as e:
-    #         print(f"Invalid path argument: {e}. Path may contain whitespaces.")
-    # except IndexError as err:
-    #     print(f"At least 1 argument should be passed: {err}")
+        
+        path = validate_correct_path()
+        if path != 'exit':
+            clean_folder(path)
+        else:
+            break
+        
+
+        # if len(sys.argv) == 3 and sys.argv[2] == 'backup':
+        #     backup_archive = True
+        # else:
+        #     backup_archive = False
+            # clean_folder(path)
+        # try:
+        #     path = rf"{sys.argv[1]}"
+        #     try:
+        #         # clean_folder(path, backup_archive)
+        #         clean_folder(path)
+        #     except FileNotFoundError as e:
+        #         print(f"Invalid path argument: {e}. Path may contain whitespaces.")
+        # except IndexError as err:
+        #     print(f"At least 1 argument should be passed: {err}")
 
 
 if __name__ == '__main__':
