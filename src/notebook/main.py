@@ -47,7 +47,7 @@ def note_book():
             first_start = False
 
         path = DATA_DIRECTORY / 'notebook_data.bin'
-        print(HELP_TABLE)
+        help()
         with open(path, 'ab+') as file:
             if not file.read(): #empty file (first start)
                 

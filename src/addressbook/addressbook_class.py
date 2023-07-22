@@ -4,6 +4,9 @@ from itertools import islice
 from email_validator import validate_email
 import phonenumbers
 import pickle
+from prettytable import PrettyTable, DOUBLE_BORDER
+
+from abstraction import TerminalOutput
 
 
 class Field:
@@ -94,16 +97,16 @@ class Record:
         self,
         name: Name,
         phone: Phone = None,
-        birthday: Birthday = None,
         email: Email = None,
+        birthday: Birthday = None,
         home: Home = None,
     ):
         self.name = name
         self.phones = []
         if phone:
             self.phones.append(phone)
-        self.birthday = birthday
         self.email = email
+        self.birthday = birthday
         self.home = home
 
     def __str__(self):
@@ -206,3 +209,50 @@ class AddressBook(UserDict):
 
     def show_all(self):
         return self.data.values()
+    
+class ContactsTernminalOutput(TerminalOutput):
+    def output_table_format(self, headers: list[str], data: list[Record]) -> PrettyTable:
+        '''In order to display data in right column please place headers in the same sequence as class Record attributes were declared'''
+        table = PrettyTable(headers)
+        table.align = 'c'
+        table.set_style(DOUBLE_BORDER)
+
+        for contact in data:
+            row_data = []
+            for value in contact.__dict__.values():
+                if isinstance(value, (list, tuple, set)):
+                    value = '\n'.join(map(str, value))
+                if value is None:
+                    value = '-'
+                row_data.append(str(value))
+
+            if len(row_data) != len(headers):
+                raise ValueError('Amount of headers doesn\'t match amount of data in a row.')
+            
+            table.add_row(row_data)
+            
+        # for contact in data:
+        #     name = str(contact.name)
+        #     phones = "\n".join([str(phone) for phone in contact.phones])
+        #     email = str(contact.email)
+        #     birthday = str(contact.birthday)
+        #     home = str(contact.home)
+        #     table.add_row([name, phones, email, birthday, home])
+        return table
+    
+    def output_help_msg(self, headers: list[str], data: list[list[str]]) -> None:
+        table = PrettyTable(headers)
+        table.set_style(DOUBLE_BORDER)
+        table.align = 'l'
+        table.add_rows(list(data))
+        return table
+
+    
+if __name__ == '__main__':
+    record = Record('John', '380934454458')
+    # record = Record('John', '380934454458', '10.08.1999', 'john@gmail.com', 'Kyiv')
+    print(record.__dict__)
+    # test_list = ['test']
+    # test_result = '\n'.join(test_list)
+    # print(test_result)
+

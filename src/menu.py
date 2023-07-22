@@ -1,5 +1,6 @@
-from logo import LOGO
+import os
 
+from logo import LOGO
 from addressbook import addressbook_app
 from file_sorter import sorter_app
 from openai_gpt import gpt_app
@@ -38,6 +39,9 @@ menu_commands_list = []
 for _, command in MENU_MAPING:
     menu_commands_list.append(command)
 
+def clear():
+    os.system('cls' if os.name == 'nt' else 'clear')
+
 @kb_interrupt_error
 def main():
     is_working = True
@@ -65,7 +69,7 @@ def main():
                     break
             else:
                 print('Невірно введений пункт меню. Спробуйте ще раз.')
-
+        clear()
 
         
 if __name__ == '__main__':

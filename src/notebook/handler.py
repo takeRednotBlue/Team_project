@@ -1,6 +1,37 @@
 from prettytable import PrettyTable
 from utilities import completer_input
 
+from notebook.classes import NotebookTerminalOutput
+
+END_COMMANDS = ['exit', 'close', 'quit']
+
+COMMAND_INPUT = ['add', 'show', 'search', 'close', 'help']
+COMMAND_INPUT_MENU = ['delete', 'change', 'tags clean', 'tags change', 'tags add', 'close']
+
+GENERAL_HELP_DICT = {
+    'headers': ['Команди', 'Пояснення'],
+    'data':{
+        'add <назва нотатки> <текс нотатки>': 'створити нову нотатку (назва без пробілів)',
+        'show <date|alp|size>': "вивести всі нотатки, сортувати за датою|алфавітом|розміром (не обов'язково)",
+        'search <тег|назва нотатки>': 'пошук нотатки за тегами або назвою нотатки',
+        'close': 'завершити роботу',
+        'help': 'список команд',
+    }
+}
+
+NOTE_HELP_DICT = {
+    'headers': ['Команда', 'Пояснення'],
+    'data': {
+        'delete': 'видалити',
+        'change <новий текст нотатки>': 'змінити нотатку',
+        'tags clean|change|add': 'змінити теги (clean - очистити, change - змінити, add - додати)',
+        'close': 'закрити меню нотатки',
+    }
+}
+
+
+output_hendler = NotebookTerminalOutput()
+
 def parser(string: str) -> tuple:
     string = string.strip().casefold()
     words_list = string.split(' ')
@@ -78,30 +109,8 @@ def show(book, mode=None):
         print('show <date|size|alp>')
     else:
         if list_of_notes:
-            table = PrettyTable(['Назва', 'Теги', 'Нотатка'])
-
-            for note in list_of_notes:
-                if len(note.text) > 100: # Для великих нотаток кожні 100 символів додаємо \n (для гарного виводу)
-                    note_tags = ', '.join(note.tags)
-                    
-                    text = ''
-                    counter = 0
-                    for i in note.text:
-                        text += i
-                        counter += 1
-                        if not counter % 100:
-                            text += '\n' 
-
-                        if len(text) > 296:
-                            text += '... '
-                            break
-
-                    table.add_row([note.name, note_tags, text], divider=True)        
-
-                else:
-                    note_tags = ', '.join(note.tags)
-                    table.add_row([note.name, note_tags, note.text], divider=True)
-
+            headers = ['Дата', 'Назва', 'Теги', 'Нотатка']
+            table = output_hendler.output_table_format(headers, list_of_notes)
             print(table)
             print('Щоб працювати з нотаткою треба обрати одну: search <назва нотатки|теги>, help - список команд')
         else:
@@ -132,7 +141,9 @@ def close(*_):
     return 'close', '_', '_' 
 
 def help(*_):
-    print(HELP_TABLE)
+    headers = GENERAL_HELP_DICT['headers']
+    data = GENERAL_HELP_DICT['data']
+    print(output_hendler.output_help_msg(headers, data))
 
 def tags(book, command, note):
     
@@ -159,7 +170,7 @@ def tags(book, command, note):
                 return 'search', note.name
             else:
                 print('Меню редагування нотатки закрито')
-                print(HELP_TABLE)
+                help()
         
         elif command == 'change':
             new_tags = input('Щоб змінити, введіть теги через пробіл, (натисніть Enter, щоб відмінити)\n>>> ')
@@ -177,45 +188,28 @@ def tags(book, command, note):
                 return 'search', note.name
             else:
                 print('Меню редагування нотатки закрито')
-                print(HELP_TABLE)
+                help()
 
 def search(book, value, search_result= True):
     result = book.search(value)
-
-    table = PrettyTable(['Назва', 'Теги', 'Нотатка'])
-    for note in result:
-        if len(note.text) > 100: # Для великих нотаток кожні 100 символів додаємо \n (для гарного виводу)
-            note_tags = ', '.join(note.tags)
-            
-            text = ''
-            counter = 0
-            for i in note.text:
-                text += i
-                counter += 1
-                if not counter % 100:
-                    text += '\n'
-
-                if len(text) > 296:
-                            text += '... '
-                            break
-                 
-            table.add_row([note.name, note_tags, text], divider=True)
-        else:
-            note_tags = ', '.join(note.tags)
-            table.add_row([note.name, note_tags, note.text], divider=True)
-
+    headers = ['Дата', 'Назва', 'Теги', 'Нотатка']
+    table = output_hendler.output_table_format(headers, result)
     if not result:
         print('Нічого не знайдено, щоб знайти нотатку: search <назва|тег нотатки>')
 
     elif len(result) == 1:
+        note = result[0]
 
         if search_result:
             print('Результат пошуку')
             print(table)
         input_2 = ''
         while not input_2.startswith(('change')) and input_2 not in ['delete', 'close', 'tags add', 'tags change', 'tags clean']:
+            note_help_headers = NOTE_HELP_DICT['headers']
+            note_help_data = NOTE_HELP_DICT['data']
             print('\t\t\t\tМеню нотатки')
-            input_2 = completer_input(f'{HELP_NOTE_TABLE}\n>>> (editnote) ', COMMAND_INPUT_MENU).casefold().strip()
+            print(output_hendler.output_help_msg(note_help_headers, note_help_data))
+            input_2 = completer_input('>>> (editnote) ', COMMAND_INPUT_MENU).casefold().strip()
 
             if input_2.startswith(('show', 'search', 'add', 'help')):
                 print(f'Команда "{input_2}" не доступна в меню нотатки')
@@ -266,21 +260,19 @@ COMMAND_DICT = {
     'tags': tags
 }
 
-END_COMMANDS = ['exit', 'close', 'quit']
-
-COMMAND_INPUT = ['add', 'show', 'search', 'close', 'help']
-COMMAND_INPUT_MENU = ['delete', 'change', 'tags clean', 'tags change', 'tags add', 'close']
-
-HELP_TABLE = PrettyTable(['Команди', 'Пояснення'])
-HELP_TABLE.add_row(['add <назва нотатки> <текс нотатки>', 'створити нову нотатку (назва без пробілів)',], divider=True)
-HELP_TABLE.add_row(['show <date|alp|size>', "вивести всі нотатки, сортувати за датою|алфавітом|розміром (не обов'язково)"], divider=True)
-HELP_TABLE.add_row(['search <тег|назва нотатки>', 'пошук нотатки за тегами або назвою нотатки'], divider=True)
-HELP_TABLE.add_row(['close', 'завершити роботу',], divider=True)
-HELP_TABLE.add_row(['help', 'список команд',], divider=True)
 
 
-HELP_NOTE_TABLE = PrettyTable(['Команда', 'Пояснення']) 
-HELP_NOTE_TABLE.add_row(['delete', 'видалити'], divider=True)
-HELP_NOTE_TABLE.add_row(['change <новий текст нотатки>', 'змінити нотатку'], divider=True)
-HELP_NOTE_TABLE.add_row(['tags clean|change|add', 'змінити теги \n(clean - очистити, change - змінити, add - додати)'], divider=True)
-HELP_NOTE_TABLE.add_row(['close', 'закрити меню нотатки'], divider=True)
+# HELP_TABLE = PrettyTable(['Команди', 'Пояснення'])
+# HELP_TABLE.add_row(['add <назва нотатки> <текс нотатки>', 'створити нову нотатку (назва без пробілів)',])
+# HELP_TABLE.add_row(['show <date|alp|size>', "вивести всі нотатки, сортувати за датою|алфавітом|розміром (не обов'язково)"])
+# HELP_TABLE.add_row(['search <тег|назва нотатки>', 'пошук нотатки за тегами або назвою нотатки'])
+# HELP_TABLE.add_row(['close', 'завершити роботу',])
+# HELP_TABLE.add_row(['help', 'список команд',])
+# 
+# 
+# HELP_NOTE_TABLE = PrettyTable(['Команда', 'Пояснення']) 
+# HELP_NOTE_TABLE.add_row(['delete', 'видалити'])
+# HELP_NOTE_TABLE.add_row(['change <новий текст нотатки>', 'змінити нотатку'])
+# HELP_NOTE_TABLE.add_row(['tags clean|change|add', 'змінити теги \n(clean - очистити, change - змінити, add - додати)'])
+# HELP_NOTE_TABLE.add_row(['close', 'закрити меню нотатки'])
+

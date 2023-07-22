@@ -5,11 +5,13 @@ from email_validator import validate_email, EmailUndeliverableError
 from colorama import Fore, init
 from faker import Faker
 from phonenumbers import is_valid_number, parse
-from tabulate import tabulate
+# from tabulate import tabulate
 
 from addressbook.addressbook_class import *
 from utilities import completer_input
 from data_storage import DATA_DIRECTORY
+
+output_handler = ContactsTernminalOutput()
 
 init()
 
@@ -46,7 +48,7 @@ def input_error(func):
                 return message
             return errors
 
-        except AttributeError:
+        # except AttributeError:
             return "Будь-ласка, введіть коректні дані."
         
         except IndexError as errors:
@@ -226,22 +228,23 @@ def phone(book: AddressBook, *args):
     rec = book.get(contact)
     return f'Контакт "{contact}". {rec.show_phones()}'
 
-@input_error
+# @input_error
 def show_all(book: AddressBook, *args):
     """
     Виведе на екран всі контакти у колонках.
     """
-    table_data = []
-    for contact in book.data.values():
-        name = contact.name.value
-        phone = ", ".join([str(phone) for phone in contact.phones])
-        email = str(contact.email) if contact.email else "Не вказано"
-        birthday = str(contact.birthday) if contact.birthday else "Не вказано"
-        home = str(contact.home) if contact.home else "Не вказано"
-        table_data.append([name, phone, email, birthday, home])
-    print()
     table_headers = ["Ім'я", "Телефон", "E-mail", "День народження", "Адреса"]
-    return tabulate(table_data, headers=table_headers, tablefmt="grid")
+    return output_handler.output_table_format(table_headers, list(book.data.values()))
+    # table_data = []
+    # for contact in book.data.values():
+    #     name = contact.name.value
+    #     phone = "\n".join([str(phone) for phone in contact.phones])
+    #     email = str(contact.email) if contact.email else "Не вказано"
+    #     birthday = str(contact.birthday) if contact.birthday else "Не вказано"
+    #     home = str(contact.home) if contact.home else "Не вказано"
+    #     table_data.append([name, phone, email, birthday, home])
+    # print()
+    # return tabulate(table_data, headers=table_headers, tablefmt="grid")
 
 @input_error
 def search(book: AddressBook, *args):
@@ -252,30 +255,33 @@ def search(book: AddressBook, *args):
     result = book.search(pattern)
     if not result:
         return "Нічого не знайдено!"
-    table_data = []
-    for contact in result:
-        name = str(contact.name)
-        phones = ", ".join([str(phone) for phone in contact.phones])
-        email = str(contact.email)
-        birthday = str(contact.birthday)
-        home = str(contact.home)
-        table_data.append([name, phones, email, birthday, home])
+    
     table_headers = ["Ім'я", "Номер телефону", "E-mail", "День народження", "Адреса"]
-    table = tabulate(table_data, headers=table_headers, tablefmt="grid")
+    table = output_handler.output_table_format(table_headers, result)
     return f"Знайдено {len(result)} співпадіння(ннь):\n{table}"
+    # table_data = []
+    # for contact in result:
+    #     name = str(contact.name)
+    #     phones = ", ".join([str(phone) for phone in contact.phones])
+    #     email = str(contact.email)
+    #     birthday = str(contact.birthday)
+    #     home = str(contact.home)
+    #     table_data.append([name, phones, email, birthday, home])
+    # table = tabulate(table_data, headers=table_headers, tablefmt="grid")
+    # return f"Знайдено {len(result)} співпадіння(ннь):\n{table}"
 
 @input_error
 def help_me(*args):
     '''
     Викликаєш цей список команд ще раз, якщо забув:)
     '''
-    command_table = []
+    help_table_data = []
     for cmd, func in command.items():
         comment = [func.__doc__.strip() if func.__doc__ else ""]
-        command_table.append([cmd, comment[0]])
+        help_table_data.append([cmd, comment[0]])
     
-    table_headers = ["Команда", "Коментар"]
-    table = tabulate(command_table, headers=table_headers, tablefmt="grid")
+    help_table_headers = ["Команда", "Коментар"]
+    table = output_handler.output_help_msg(help_table_headers, help_table_data)
     return f"Доступні команди:\n{table}"
 
 @input_error
