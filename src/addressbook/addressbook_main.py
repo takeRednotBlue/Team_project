@@ -311,7 +311,7 @@ command = {
     "delete birthday": delete_birthday,
     "delete email": delete_email,
     "delete contact": delete_contact,
-    "close": exit,
+    "close": exit, 
     "good bye": exit,
     "exit": exit,
     "help": help_me,
