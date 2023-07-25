@@ -1,10 +1,11 @@
+import pickle
 from collections import UserDict
 from datetime import datetime
 from itertools import islice
-from email_validator import validate_email
+
 import phonenumbers
-import pickle
-from prettytable import PrettyTable, DOUBLE_BORDER
+from email_validator import validate_email
+from prettytable import DOUBLE_BORDER, PrettyTable
 
 from abstraction import TerminalOutput
 
@@ -35,7 +36,8 @@ class Email(Field):
             self.__value = value
         else:
             raise ValueError("Невірно вказаний email")
-        
+
+
 class Name(Field):
     @property
     def value(self):
@@ -46,14 +48,14 @@ class Name(Field):
         if not value.isnumeric():
             self.__value = value
         else:
-            raise ValueError('Ім\'я не може бути лише з цифр.')
+            raise ValueError("Ім'я не може бути лише з цифр.")
 
 
 class Phone(Field):
     @property
     def value(self):
         return self.__value
-    
+
     @value.setter
     def value(self, value):
         parsed_number = phonenumbers.parse(value, "UA")
@@ -71,7 +73,7 @@ class Birthday(Field):
     @value.setter
     def value(self, value):
         try:
-            self.__value = datetime.strptime(value, "%d.%m.%Y")          
+            self.__value = datetime.strptime(value, "%d.%m.%Y")
         except ValueError:
             return "Невірно вказано дату народження, використовуйте формат ДД.MM.РРРР"
 
@@ -113,7 +115,7 @@ class Record:
         num = ", ".join([str(phone) for phone in self.phones])
         line = f"{self.name}: Номер телефону: {num}; Email: {self.email}; День народження: {self.birthday}; Адреса: {self.home}\n"
         return line
-    
+
     def __repr__(self):
         num = ", ".join([str(phone) for phone in self.phones])
         line = f"{self.name}: Номер телефону: {num}; Email: {self.email}; День народження: {self.birthday}; Адреса: {self.home}\n"
@@ -171,7 +173,7 @@ class Record:
         else:
             self.phones.pop(num - 1)
             self.phones.insert(num - 1, phone_new)
-            
+
     def add_home_address(self, home: str):
         if not self.home:
             self.home = home
@@ -184,7 +186,6 @@ class AddressBook(UserDict):
         super().__init__()
         self.filename = filename
 
-
     def load_from_file(self):
         with open(self.filename, "rb") as file:
             book = pickle.load(file)
@@ -193,7 +194,7 @@ class AddressBook(UserDict):
     def save_to_file(self):
         with open(self.filename, "wb") as file:
             pickle.dump(self, file)
-    
+
     def search(self, sample: str) -> list:
         searching = []
         for contact in self.data.values():
@@ -209,28 +210,33 @@ class AddressBook(UserDict):
 
     def show_all(self):
         return self.data.values()
-    
+
+
 class ContactsTernminalOutput(TerminalOutput):
-    def output_table_format(self, headers: list[str], data: list[Record]) -> PrettyTable:
-        '''In order to display data in right column please place headers in the same sequence as class Record attributes were declared'''
+    def output_table_format(
+        self, headers: list[str], data: list[Record]
+    ) -> PrettyTable:
+        """In order to display data in right column please place headers in the same sequence as class Record attributes were declared"""
         table = PrettyTable(headers)
-        table.align = 'c'
+        table.align = "c"
         table.set_style(DOUBLE_BORDER)
 
         for contact in data:
             row_data = []
             for value in contact.__dict__.values():
                 if isinstance(value, (list, tuple, set)):
-                    value = '\n'.join(map(str, value))
+                    value = "\n".join(map(str, value))
                 if value is None:
-                    value = '-'
+                    value = "-"
                 row_data.append(str(value))
 
             if len(row_data) != len(headers):
-                raise ValueError('Amount of headers doesn\'t match amount of data in a row.')
-            
+                raise ValueError(
+                    "Amount of headers doesn't match amount of data in a row."
+                )
+
             table.add_row(row_data)
-            
+
         # for contact in data:
         #     name = str(contact.name)
         #     phones = "\n".join([str(phone) for phone in contact.phones])
@@ -239,20 +245,19 @@ class ContactsTernminalOutput(TerminalOutput):
         #     home = str(contact.home)
         #     table.add_row([name, phones, email, birthday, home])
         return table
-    
+
     def output_help_msg(self, headers: list[str], data: list[list[str]]) -> None:
         table = PrettyTable(headers)
         table.set_style(DOUBLE_BORDER)
-        table.align = 'l'
+        table.align = "l"
         table.add_rows(list(data))
         return table
 
-    
-if __name__ == '__main__':
-    record = Record('John', '380934454458')
+
+if __name__ == "__main__":
+    record = Record("John", "380934454458")
     # record = Record('John', '380934454458', '10.08.1999', 'john@gmail.com', 'Kyiv')
     print(record.__dict__)
     # test_list = ['test']
     # test_result = '\n'.join(test_list)
     # print(test_result)
-

@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
 
+
 class TerminalOutput(ABC):
     @abstractmethod
     def output_table_format(self, headers, data):
