@@ -1,0 +1,23 @@
+[tool.poetry]
+name = "bithive-bot"
+version = "0.1.0"
+description = "Assistant bot for those who in love with terminal"
+authors = ["takeRednotBlue <maxymklym1996@gmail.com>"]
+license = "LICENSE"
+readme = "README.md"
+# packages = [{include = "bithive_bot"}]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+prettytable = "^3.8.0"
+openai = "^0.27.8"
+colorama = "^0.4.6"
+Faker = "^19.2.0"
+email-validator = "^2.0.0.post2"
+phonenumbers = "^8.13.17"
+prompt-toolkit = "^3.0.39"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

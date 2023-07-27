@@ -182,17 +182,17 @@ class Record:
 
 
 class AddressBook(UserDict):
-    def __init__(self, filename):
+    def __init__(self, filename=None):
         super().__init__()
         self.filename = filename
 
-    def load_from_file(self):
-        with open(self.filename, "rb") as file:
+    def load_from_file(self, filename):
+        with open(filename, "rb") as file:
             book = pickle.load(file)
         return book
 
-    def save_to_file(self):
-        with open(self.filename, "wb") as file:
+    def save_to_file(self, filename):
+        with open(filename, "wb") as file:
             pickle.dump(self, file)
 
     def search(self, sample: str) -> list:

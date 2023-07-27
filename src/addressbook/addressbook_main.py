@@ -51,7 +51,7 @@ def input_error(func):
                 return message
             return errors
 
-            # except AttributeError:
+        except AttributeError:
             return "Будь-ласка, введіть коректні дані."
 
         except IndexError as errors:
@@ -392,9 +392,9 @@ def main():
 
     filename = DATA_DIRECTORY / "addressbook_data.bin"
     if filename.exists():
-        book1 = AddressBook(filename).load_from_file()
+        book1 = AddressBook().load_from_file(filename)
     else:
-        book1 = AddressBook(filename)
+        book1 = AddressBook()
 
     # fake(book1)
 
@@ -428,9 +428,11 @@ def main():
             print(command(book1, *args))
         else:
             is_ended = False
+            book1.save_to_file(filename)
+
     except KeyboardInterrupt:
         print("Будь ласка, користуйся командами для завершення роботи")
-        book1.save_to_file()
+        book1.save_to_file(filename)
 
 
 if __name__ == "__main__":
